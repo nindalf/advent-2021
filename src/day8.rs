@@ -20,27 +20,25 @@ fn count_1478s(input: &[String]) -> u32 {
 
 #[allow(dead_code)]
 fn decode_book(input: &[String]) -> u32 {
-    input.iter().map(|line| decode_line(line)).sum()
+    input.iter().filter_map(|line| decode_line(line)).sum()
 }
 
-fn decode_line(line: &str) -> u32 {
+fn decode_line(line: &str) -> Option<u32> {
     let mut parts = line.split("|");
-    let signals = parts.next().unwrap();
+    let signals = parts.next()?;
     let one = Digit::new(
         signals
             .split_ascii_whitespace()
             .filter(|s| s.len() == 2)
-            .next()
-            .unwrap(),
+            .next()?,
     );
     let four = Digit::new(
         signals
             .split_ascii_whitespace()
             .filter(|s| s.len() == 4)
-            .next()
-            .unwrap(),
+            .next()?,
     );
-    let output = parts.next().unwrap();
+    let output = parts.next()?;
     let digit_values: Vec<u32> = output
         .split_ascii_whitespace()
         .map(|s| Digit::new(s))
@@ -51,7 +49,7 @@ fn decode_line(line: &str) -> u32 {
     for (i, value) in digit_values.iter().enumerate() {
         result += value * u32::pow(10, i as u32);
     }
-    result
+    Some(result)
 }
 
 #[derive(Debug)]
