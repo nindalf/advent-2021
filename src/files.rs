@@ -24,3 +24,11 @@ pub fn read_lines(file_name: &str) -> Result<Vec<String>, Error> {
 pub fn read_string(file_name: &str) -> Result<String, Error> {
     Ok(std::fs::read_to_string(file_name)?)
 }
+
+#[allow(dead_code)]
+pub fn read_numbers_one_line(file_name: &str) -> Result<Vec<u32>, Error> {
+    Ok(std::fs::read_to_string(file_name)?
+        .split(",")
+        .filter_map(|x| x.parse::<u32>().ok())
+        .collect())
+}

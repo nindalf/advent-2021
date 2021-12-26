@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use anyhow::{anyhow, Result};
 
 #[allow(dead_code)]
-fn num_lantern_fish(input: &str, days: u64) -> Result<u64> {
+fn num_lantern_fish(input: &[u32], days: u64) -> Result<u64> {
     let mut fishes = HashMap::from([
         (0, 0),
         (1, 0),
@@ -15,9 +15,8 @@ fn num_lantern_fish(input: &str, days: u64) -> Result<u64> {
         (7, 0),
         (8, 0),
     ]);
-    for fish in input.split(",") {
-        let fish = fish.parse::<u32>()?;
-        *fishes.entry(fish).or_insert(0) += 1;
+    for fish in input {
+        *fishes.entry(*fish).or_insert(0) += 1;
     }
     for _ in 0..days {
         let new_spawn = *fishes.get(&0).ok_or(anyhow!("Hashmap get failed"))?;
@@ -40,7 +39,7 @@ mod tests {
 
     #[test]
     fn part_1_test() -> Result<()> {
-        let input = crate::files::read_string("inputs/day6-test.txt")?;
+        let input = crate::files::read_numbers_one_line("inputs/day6-test.txt")?;
         assert_eq!(super::num_lantern_fish(&input, 18)?, 26);
         assert_eq!(super::num_lantern_fish(&input, 80)?, 5934);
         Ok(())
@@ -48,21 +47,21 @@ mod tests {
 
     #[test]
     fn part_1_real() -> Result<()> {
-        let input = crate::files::read_string("inputs/day6.txt")?;
+        let input = crate::files::read_numbers_one_line("inputs/day6.txt")?;
         assert_eq!(super::num_lantern_fish(&input, 80)?, 352151);
         Ok(())
     }
 
     #[test]
     fn part_2_test() -> Result<()> {
-        let input = crate::files::read_string("inputs/day6-test.txt")?;
+        let input = crate::files::read_numbers_one_line("inputs/day6-test.txt")?;
         assert_eq!(super::num_lantern_fish(&input, 256)?, 26984457539);
         Ok(())
     }
 
     #[test]
     fn part_2_real() -> Result<()> {
-        let input = crate::files::read_string("inputs/day6.txt")?;
+        let input = crate::files::read_numbers_one_line("inputs/day6.txt")?;
         assert_eq!(super::num_lantern_fish(&input, 256)?, 1601616884019);
         Ok(())
     }
