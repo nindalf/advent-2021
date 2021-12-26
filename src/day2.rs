@@ -1,5 +1,37 @@
 use anyhow::anyhow;
 
+fn final_position_part_1(instructions: &[String]) -> anyhow::Result<Submarine> {
+    let mut sub = Submarine::new();
+    for instruction in instructions {
+        let mut splits = instruction.split_ascii_whitespace();
+        let direction = splits.next().ok_or(anyhow!("invalid direction"))?;
+        let distance = splits.next().ok_or(anyhow!("invalid distance"))?.parse::<i32>()?;
+        match direction {
+            "forward" => sub.forward(distance),
+            "up" => sub.up(distance),
+            "down" => sub.down(distance),
+            _ => return Err(anyhow!("invalid direction"))
+        }
+    }
+    Ok(sub)
+}
+
+fn final_position_part_2(instructions: &[String]) -> anyhow::Result<SubmarineVersion2> {
+    let mut sub = SubmarineVersion2::new();
+    for instruction in instructions {
+        let mut splits = instruction.split_ascii_whitespace();
+        let direction = splits.next().ok_or(anyhow!("invalid direction"))?;
+        let distance = splits.next().ok_or(anyhow!("invalid distance"))?.parse::<i32>()?;
+        match direction {
+            "forward" => sub.forward(distance),
+            "up" => sub.up(distance),
+            "down" => sub.down(distance),
+            _ => return Err(anyhow!("invalid direction"))
+        }
+    }
+    Ok(sub)
+}
+
 struct Submarine {
     x: i32,
     y: i32,
@@ -48,38 +80,7 @@ impl SubmarineVersion2 {
     }
 }
 
-fn final_position_part_1(instructions: &[String]) -> anyhow::Result<Submarine> {
-    let mut sub = Submarine::new();
-    for instruction in instructions {
-        let mut splits = instruction.split_ascii_whitespace();
-        let direction = splits.next().ok_or(anyhow!("invalid direction"))?;
-        let distance = splits.next().ok_or(anyhow!("invalid distance"))?.parse::<i32>()?;
-        match direction {
-            "forward" => sub.forward(distance),
-            "up" => sub.up(distance),
-            "down" => sub.down(distance),
-            _ => return Err(anyhow!("invalid direction"))
-        }
-    }
-    Ok(sub)
-}
-
-fn final_position_part_2(instructions: &[String]) -> anyhow::Result<SubmarineVersion2> {
-    let mut sub = SubmarineVersion2::new();
-    for instruction in instructions {
-        let mut splits = instruction.split_ascii_whitespace();
-        let direction = splits.next().ok_or(anyhow!("invalid direction"))?;
-        let distance = splits.next().ok_or(anyhow!("invalid distance"))?.parse::<i32>()?;
-        match direction {
-            "forward" => sub.forward(distance),
-            "up" => sub.up(distance),
-            "down" => sub.down(distance),
-            _ => return Err(anyhow!("invalid direction"))
-        }
-    }
-    Ok(sub)
-}
-
+#[cfg(test)]
 mod tests {
     #[test]
     fn part_1_test() -> anyhow::Result<()> {

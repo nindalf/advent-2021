@@ -4,17 +4,18 @@ fn number_of_increases(input: &[i32]) -> usize {
         .count()
 }
 
+fn num_increasing_windows(input: &[i32]) -> usize {
+    let window_sums = create_three_element_windows(input);
+    number_of_increases(&window_sums)
+}
+
 fn create_three_element_windows(input: &[i32]) -> Vec<i32> {
     input.iter().zip(input.iter().skip(1).zip(input.iter().skip(2)))
         .map(|(x, (y, z))| *x + *y + *z)
         .collect()
 }
 
-fn num_increasing_windows(input: &[i32]) -> usize {
-    let window_sums = create_three_element_windows(input);
-    number_of_increases(&window_sums)
-}
-
+#[cfg(test)]
 mod tests {
     #[test]
     fn part_1_test() {
