@@ -1,5 +1,6 @@
 use anyhow::anyhow;
 
+#[allow(dead_code)]
 fn final_position_part_1(instructions: &[String]) -> anyhow::Result<Submarine> {
     let mut sub = Submarine::new();
     for instruction in instructions {
@@ -16,6 +17,7 @@ fn final_position_part_1(instructions: &[String]) -> anyhow::Result<Submarine> {
     Ok(sub)
 }
 
+#[allow(dead_code)]
 fn final_position_part_2(instructions: &[String]) -> anyhow::Result<SubmarineVersion2> {
     let mut sub = SubmarineVersion2::new();
     for instruction in instructions {

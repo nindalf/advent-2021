@@ -1,9 +1,11 @@
+#[allow(dead_code)]
 fn number_of_increases(input: &[i32]) -> usize {
     input.iter().zip(input.iter().skip(1))
         .filter(|(first, second)| **second > **first)
         .count()
 }
 
+#[allow(dead_code)]
 fn num_increasing_windows(input: &[i32]) -> usize {
     let window_sums = create_three_element_windows(input);
     number_of_increases(&window_sums)

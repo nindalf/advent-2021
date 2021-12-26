@@ -1,15 +1,19 @@
+#[allow(dead_code)]
 fn gamma(input: &[String]) -> anyhow::Result<u32> {
     process(input, &most_common_digit)
 }
 
+#[allow(dead_code)]
 fn epsilon(input: &[String]) -> anyhow::Result<u32> {
     process(input, &least_common_digit)
 }
 
+#[allow(dead_code)]
 fn oxygen_rating(input: &[String]) -> anyhow::Result<u32> {
     process_repeatedly(input, &most_common_digit)
 }
 
+#[allow(dead_code)]
 fn co2_rating(input: &[String]) -> anyhow::Result<u32> {
     process_repeatedly(input, &least_common_digit)
 }
