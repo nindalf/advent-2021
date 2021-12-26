@@ -19,3 +19,8 @@ pub fn read_lines(file_name: &str) -> Result<Vec<String>, Error> {
         .filter_map(|line_result| line_result.ok())
         .collect())
 }
+
+#[allow(dead_code)]
+pub fn read_string(file_name: &str) -> Result<String, Error> {
+    Ok(std::fs::read_to_string(file_name)?)
+}
