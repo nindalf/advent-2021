@@ -42,7 +42,10 @@ fn process_repeatedly(
         let digit = process_fn(&line);
         temp = temp
             .into_iter()
-            .filter(|line| line.chars().nth(index).unwrap() == digit)
+            .filter(|line| match line.chars().nth(index) {
+                Some(c) => c == digit,
+                None => false,
+            })
             .collect();
     }
     let result = u32::from_str_radix(&temp[0], 2)?;
@@ -71,7 +74,10 @@ fn nth_line(input: &[String], n: usize) -> Vec<char> {
     }
     let mut result: Vec<char> = Vec::with_capacity(input.len());
     for line in input {
-        result.push(line.chars().nth(n).unwrap());
+        match line.chars().nth(n) {
+            Some(c) => result.push(c),
+            None => {}
+        }
     }
     return result;
 }
@@ -103,33 +109,35 @@ fn counts(input: &[char]) -> (u32, u32) {
 
 #[cfg(test)]
 mod tests {
+    use anyhow::Result;
+
     #[test]
-    fn part_1_test() -> anyhow::Result<()> {
-        let input = crate::files::read_lines("inputs/day3-test.txt").unwrap();
+    fn part_1_test() -> Result<()> {
+        let input = crate::files::read_lines("inputs/day3-test.txt")?;
         assert_eq!(super::gamma(&input)?, 22);
         assert_eq!(super::epsilon(&input)?, 9);
         Ok(())
     }
 
     #[test]
-    fn part_1_real() -> anyhow::Result<()> {
-        let input = crate::files::read_lines("inputs/day3.txt").unwrap();
+    fn part_1_real() -> Result<()> {
+        let input = crate::files::read_lines("inputs/day3.txt")?;
         assert_eq!(super::gamma(&input)?, 199);
         assert_eq!(super::epsilon(&input)?, 3896);
         Ok(())
     }
 
     #[test]
-    fn part_2_test() -> anyhow::Result<()> {
-        let input = crate::files::read_lines("inputs/day3-test.txt").unwrap();
+    fn part_2_test() -> Result<()> {
+        let input = crate::files::read_lines("inputs/day3-test.txt")?;
         assert_eq!(super::oxygen_rating(&input)?, 23);
         assert_eq!(super::co2_rating(&input)?, 10);
         Ok(())
     }
 
     #[test]
-    fn part_2_real() -> anyhow::Result<()> {
-        let input = crate::files::read_lines("inputs/day3.txt").unwrap();
+    fn part_2_real() -> Result<()> {
+        let input = crate::files::read_lines("inputs/day3.txt")?;
         assert_eq!(super::oxygen_rating(&input)?, 509);
         assert_eq!(super::co2_rating(&input)?, 2693);
         Ok(())

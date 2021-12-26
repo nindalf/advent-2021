@@ -90,33 +90,35 @@ impl SubmarineVersion2 {
 
 #[cfg(test)]
 mod tests {
+    use anyhow::Result;
+
     #[test]
-    fn part_1_test() -> anyhow::Result<()> {
-        let input = crate::files::read_lines("inputs/day2-test.txt").unwrap();
+    fn part_1_test() -> Result<()> {
+        let input = crate::files::read_lines("inputs/day2-test.txt")?;
         let submarine = super::final_position_part_1(&input)?;
         assert_eq!(submarine.x * submarine.y, 150);
         Ok(())
     }
 
     #[test]
-    fn part_1_real() -> anyhow::Result<()> {
-        let input = crate::files::read_lines("inputs/day2.txt").unwrap();
+    fn part_1_real() -> Result<()> {
+        let input = crate::files::read_lines("inputs/day2.txt")?;
         let submarine = super::final_position_part_1(&input)?;
         assert_eq!(submarine.x * submarine.y, 2322630);
         Ok(())
     }
 
     #[test]
-    fn part_2_test() -> anyhow::Result<()> {
-        let input = crate::files::read_lines("inputs/day2-test.txt").unwrap();
+    fn part_2_test() -> Result<()> {
+        let input = crate::files::read_lines("inputs/day2-test.txt")?;
         let submarine = super::final_position_part_2(&input)?;
         assert_eq!(submarine.x * submarine.y, 900);
         Ok(())
     }
 
     #[test]
-    fn part_2_real() -> anyhow::Result<()> {
-        let input = crate::files::read_lines("inputs/day2.txt").unwrap();
+    fn part_2_real() -> Result<()> {
+        let input = crate::files::read_lines("inputs/day2.txt")?;
         let submarine = super::final_position_part_2(&input)?;
         assert_eq!(submarine.x * submarine.y, 2105273490);
         Ok(())

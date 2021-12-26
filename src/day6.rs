@@ -20,7 +20,7 @@ fn num_lantern_fish(input: &str, days: u64) -> Result<u64> {
         *fishes.entry(fish).or_insert(0) += 1;
     }
     for _ in 0..days {
-        let new_spawn = *fishes.get(&0).unwrap();
+        let new_spawn = *fishes.get(&0).ok_or(anyhow!("Hashmap get failed"))?;
         for i in 0..8 {
             let prev_gen = *fishes.get(&(i + 1)).ok_or(anyhow!("Hashmap get failed"))?;
             fishes

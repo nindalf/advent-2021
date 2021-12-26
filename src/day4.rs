@@ -3,9 +3,11 @@ use std::collections::HashMap;
 #[allow(dead_code)]
 fn winning_and_losing_bingo_combination(input: &str) -> (Option<u32>, Option<u32>) {
     let mut parts = input.split("\n\n");
-    let called_numbers: Vec<u32> = parts
-        .next()
-        .unwrap()
+    let first_line = match parts.next() {
+        Some(line) => line,
+        None => return (None, None),
+    };
+    let called_numbers: Vec<u32> = first_line
         .split(",")
         .filter_map(|s| s.parse::<u32>().ok())
         .collect();
@@ -80,11 +82,10 @@ impl BingoBoard {
     }
 
     fn mark(&mut self, number: u32) {
-        if !self.number_to_cell.contains_key(&number) {
-            return;
-        }
-
-        let cell = self.number_to_cell.get_mut(&number).unwrap();
+        let cell = match self.number_to_cell.get_mut(&number) {
+            Some(cell) => cell,
+            None => return,
+        };
         if cell.marked {
             // Cell was already called.
             return;
@@ -112,13 +113,13 @@ impl BingoBoard {
 
 #[cfg(test)]
 mod tests {
-    use anyhow::Result;
+    use anyhow::{anyhow, Result};
 
     #[test]
     fn part_1_test() -> Result<()> {
         let input = crate::files::read_string("inputs/day4-test.txt")?;
         let result = super::winning_and_losing_bingo_combination(&input);
-        assert_eq!(result.0.unwrap(), 4512);
+        assert_eq!(result.0.ok_or(anyhow!("Failed to find result"))?, 4512);
         Ok(())
     }
 
@@ -126,7 +127,7 @@ mod tests {
     fn part_1_real() -> Result<()> {
         let input = crate::files::read_string("inputs/day4.txt")?;
         let result = super::winning_and_losing_bingo_combination(&input);
-        assert_eq!(result.0.unwrap(), 35711);
+        assert_eq!(result.0.ok_or(anyhow!("Failed to find result"))?, 35711);
         Ok(())
     }
 
@@ -134,7 +135,7 @@ mod tests {
     fn part_2_test() -> Result<()> {
         let input = crate::files::read_string("inputs/day4-test.txt")?;
         let result = super::winning_and_losing_bingo_combination(&input);
-        assert_eq!(result.1.unwrap(), 1924);
+        assert_eq!(result.1.ok_or(anyhow!("Failed to find result"))?, 1924);
         Ok(())
     }
 
@@ -142,7 +143,7 @@ mod tests {
     fn part_2_real() -> Result<()> {
         let input = crate::files::read_string("inputs/day4.txt")?;
         let result = super::winning_and_losing_bingo_combination(&input);
-        assert_eq!(result.1.unwrap(), 5586);
+        assert_eq!(result.1.ok_or(anyhow!("Failed to find result"))?, 5586);
         Ok(())
     }
 }

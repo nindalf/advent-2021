@@ -23,31 +23,37 @@ fn create_three_element_windows(input: &[i32]) -> Vec<i32> {
 
 #[cfg(test)]
 mod tests {
+    use anyhow::Result;
+
     #[test]
-    fn part_1_test() {
-        let input = crate::files::read_numbers("inputs/day1-test.txt").unwrap();
+    fn part_1_test() -> Result<()> {
+        let input = crate::files::read_numbers("inputs/day1-test.txt")?;
         let result = super::number_of_increases(&input);
         assert_eq!(result, 7);
+        Ok(())
     }
 
     #[test]
-    fn part_1_real() {
-        let input = crate::files::read_numbers("inputs/day1.txt").unwrap();
+    fn part_1_real() -> Result<()> {
+        let input = crate::files::read_numbers("inputs/day1.txt")?;
         let result = super::number_of_increases(&input);
         assert_eq!(result, 1709);
+        Ok(())
     }
 
     #[test]
-    fn part_2_test() {
-        let input = crate::files::read_numbers("inputs/day1-test.txt").unwrap();
+    fn part_2_test() -> Result<()> {
+        let input = crate::files::read_numbers("inputs/day1-test.txt")?;
         let result = super::num_increasing_windows(&input);
         assert_eq!(result, 5);
+        Ok(())
     }
 
     #[test]
-    fn part_2_real() {
-        let input = crate::files::read_numbers("inputs/day1.txt").unwrap();
+    fn part_2_real() -> Result<()> {
+        let input = crate::files::read_numbers("inputs/day1.txt")?;
         let result = super::num_increasing_windows(&input);
         assert_eq!(result, 1761);
+        Ok(())
     }
 }
