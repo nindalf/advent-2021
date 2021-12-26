@@ -6,12 +6,15 @@ fn final_position_part_1(instructions: &[String]) -> anyhow::Result<Submarine> {
     for instruction in instructions {
         let mut splits = instruction.split_ascii_whitespace();
         let direction = splits.next().ok_or(anyhow!("invalid direction"))?;
-        let distance = splits.next().ok_or(anyhow!("invalid distance"))?.parse::<i32>()?;
+        let distance = splits
+            .next()
+            .ok_or(anyhow!("invalid distance"))?
+            .parse::<i32>()?;
         match direction {
             "forward" => sub.forward(distance),
             "up" => sub.up(distance),
             "down" => sub.down(distance),
-            _ => return Err(anyhow!("invalid direction"))
+            _ => return Err(anyhow!("invalid direction")),
         }
     }
     Ok(sub)
@@ -23,12 +26,15 @@ fn final_position_part_2(instructions: &[String]) -> anyhow::Result<SubmarineVer
     for instruction in instructions {
         let mut splits = instruction.split_ascii_whitespace();
         let direction = splits.next().ok_or(anyhow!("invalid direction"))?;
-        let distance = splits.next().ok_or(anyhow!("invalid distance"))?.parse::<i32>()?;
+        let distance = splits
+            .next()
+            .ok_or(anyhow!("invalid distance"))?
+            .parse::<i32>()?;
         match direction {
             "forward" => sub.forward(distance),
             "up" => sub.up(distance),
             "down" => sub.down(distance),
-            _ => return Err(anyhow!("invalid direction"))
+            _ => return Err(anyhow!("invalid direction")),
         }
     }
     Ok(sub)
@@ -41,7 +47,7 @@ struct Submarine {
 
 impl Submarine {
     fn new() -> Submarine {
-        Submarine{x: 0, y: 0}
+        Submarine { x: 0, y: 0 }
     }
 
     fn forward(&mut self, i: i32) {
@@ -65,7 +71,7 @@ struct SubmarineVersion2 {
 
 impl SubmarineVersion2 {
     fn new() -> SubmarineVersion2 {
-        SubmarineVersion2{x: 0, y: 0, aim: 0}
+        SubmarineVersion2 { x: 0, y: 0, aim: 0 }
     }
 
     fn forward(&mut self, i: i32) {

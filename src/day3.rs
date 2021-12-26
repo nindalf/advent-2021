@@ -29,15 +29,21 @@ fn process(input: &[String], process_fn: &dyn Fn(&[char]) -> char) -> anyhow::Re
     return Ok(result);
 }
 
-fn process_repeatedly(input: &[String], process_fn: &dyn Fn(&[char]) -> char) -> anyhow::Result<u32> {
-    let mut temp: Vec<String>  = input.into_iter().map(|s| s.to_owned()).collect();
+fn process_repeatedly(
+    input: &[String],
+    process_fn: &dyn Fn(&[char]) -> char,
+) -> anyhow::Result<u32> {
+    let mut temp: Vec<String> = input.into_iter().map(|s| s.to_owned()).collect();
     for index in 0..input[0].len() {
         if temp.len() == 1 {
-            break
+            break;
         }
         let line = nth_line(&temp, index);
         let digit = process_fn(&line);
-        temp = temp.into_iter().filter(|line| line.chars().nth(index).unwrap() == digit).collect();
+        temp = temp
+            .into_iter()
+            .filter(|line| line.chars().nth(index).unwrap() == digit)
+            .collect();
     }
     let result = u32::from_str_radix(&temp[0], 2)?;
     return Ok(result);
@@ -45,7 +51,7 @@ fn process_repeatedly(input: &[String], process_fn: &dyn Fn(&[char]) -> char) ->
 
 fn split_lines(input: &[String]) -> Vec<Vec<char>> {
     if input.len() < 1 {
-        return Vec::new()
+        return Vec::new();
     }
     let mut result: Vec<Vec<char>> = Vec::with_capacity(input[0].len());
     for _ in 0..input[0].len() {
@@ -61,7 +67,7 @@ fn split_lines(input: &[String]) -> Vec<Vec<char>> {
 
 fn nth_line(input: &[String], n: usize) -> Vec<char> {
     if input.len() < 1 {
-        return Vec::new()
+        return Vec::new();
     }
     let mut result: Vec<char> = Vec::with_capacity(input.len());
     for line in input {
@@ -89,7 +95,7 @@ fn least_common_digit(input: &[char]) -> char {
 fn counts(input: &[char]) -> (u32, u32) {
     input.iter().fold((0, 0), |(zeros, ones), item| {
         if *item == '0' {
-            return (zeros+1, ones);
+            return (zeros + 1, ones);
         }
         return (zeros, ones + 1);
     })

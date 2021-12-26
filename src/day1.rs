@@ -1,6 +1,8 @@
 #[allow(dead_code)]
 fn number_of_increases(input: &[i32]) -> usize {
-    input.iter().zip(input.iter().skip(1))
+    input
+        .iter()
+        .zip(input.iter().skip(1))
         .filter(|(first, second)| **second > **first)
         .count()
 }
@@ -12,7 +14,9 @@ fn num_increasing_windows(input: &[i32]) -> usize {
 }
 
 fn create_three_element_windows(input: &[i32]) -> Vec<i32> {
-    input.iter().zip(input.iter().skip(1).zip(input.iter().skip(2)))
+    input
+        .iter()
+        .zip(input.iter().skip(1).zip(input.iter().skip(2)))
         .map(|(x, (y, z))| *x + *y + *z)
         .collect()
 }
