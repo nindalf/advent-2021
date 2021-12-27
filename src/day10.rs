@@ -94,11 +94,6 @@ fn char_completion_points(c: char) -> u64 {
     }
 }
 
-#[allow(dead_code)]
-fn total_completion_points(input: &[String]) -> u64 {
-    input.iter().map(|line| corruption_points(line)).sum()
-}
-
 #[cfg(test)]
 mod tests {
     use anyhow::Result;
