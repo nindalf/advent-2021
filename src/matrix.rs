@@ -104,6 +104,15 @@ impl std::fmt::Display for Matrix {
     }
 }
 
+impl Point {
+    pub fn new(s: &str) -> Option<Point> {
+        let mut parts = s.split(",");
+        let x = parts.next()?.parse::<usize>().ok()?;
+        let y = parts.next()?.parse::<usize>().ok()?;
+        Some(Point { x, y })
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use std::collections::HashSet;
