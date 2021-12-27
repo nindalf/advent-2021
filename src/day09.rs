@@ -1,32 +1,8 @@
 use std::collections::{HashSet, VecDeque};
 
-struct Matrix {
-    storage: Vec<u32>,
-    max_x: usize,
-    max_y: usize,
-}
+use crate::matrix::Matrix;
 
 impl Matrix {
-    #[allow(dead_code)]
-    fn new(input: &str) -> Option<Matrix> {
-        let storage = input
-            .split("")
-            .filter_map(|d| d.parse::<u32>().ok())
-            .collect();
-        let max_x = input
-            .split_ascii_whitespace()
-            .next()?
-            .split("")
-            .filter_map(|d| d.parse::<u32>().ok())
-            .count();
-        let max_y = input.split_ascii_whitespace().count();
-        Some(Matrix {
-            storage,
-            max_x,
-            max_y,
-        })
-    }
-
     #[allow(dead_code)]
     fn low_point_value_sum(&self) -> u32 {
         self.all_points()
@@ -35,12 +11,6 @@ impl Matrix {
             .filter_map(|(x, y)| self.value(*x, *y))
             .map(|val| val + 1)
             .sum()
-    }
-
-    fn all_points(&self) -> Vec<(usize, usize)> {
-        (0..self.max_x)
-            .flat_map(|x| std::iter::repeat(x).zip(0..self.max_y))
-            .collect()
     }
 
     fn is_low_point(&self, x: usize, y: usize) -> bool {
@@ -109,10 +79,6 @@ impl Matrix {
 
         result.sort_by(|a, b| b.cmp(a));
         result.iter().take(3).product()
-    }
-
-    fn value(&self, x: usize, y: usize) -> Option<&u32> {
-        self.storage.get(y * self.max_x + x)
     }
 }
 

@@ -10,6 +10,7 @@ mod day09;
 mod day10;
 
 mod files;
+mod matrix;
 
 fn main() {
     println!("Hello, world!");
