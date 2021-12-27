@@ -4,6 +4,12 @@ pub struct Matrix {
     pub max_y: usize,
 }
 
+#[derive(PartialEq, Eq, Clone, Copy, Debug, Hash)]
+pub struct Point {
+    pub x: usize,
+    pub y: usize,
+}
+
 impl Matrix {
     #[allow(dead_code)]
     pub fn new(input: &str) -> Option<Matrix> {
@@ -25,13 +31,187 @@ impl Matrix {
         })
     }
 
-    pub fn all_points(&self) -> Vec<(usize, usize)> {
+    pub fn all_points(&self) -> impl Iterator<Item = Point> + '_ {
         (0..self.max_x)
             .flat_map(|x| std::iter::repeat(x).zip(0..self.max_y))
-            .collect()
+            .map(|(x, y)| Point { x, y })
     }
 
-    pub fn value(&self, x: usize, y: usize) -> Option<&u32> {
-        self.storage.get(y * self.max_x + x)
+    pub fn find(&self, needle: u32) -> impl Iterator<Item = Point> + '_ {
+        self.all_points()
+            .filter(move |point| match self.value(point) {
+                Some(val) => *val == needle,
+                None => false,
+            })
+    }
+
+    pub fn value(&self, point: &Point) -> Option<&u32> {
+        self.storage.get(point.y * self.max_x + point.x)
+    }
+
+    pub fn set(&mut self, point: &Point, val: u32) {
+        self.storage[(point.y * self.max_x + point.x)] = val;
+    }
+
+    pub fn add_to_all(&mut self, n: u32) {
+        for x in self.storage.iter_mut() {
+            *x += n;
+        }
+    }
+
+    pub fn add(&mut self, point: &Point, n: u32) {
+        self.storage[(point.y * self.max_x + point.x)] += n;
+    }
+
+    pub fn neighbours(&self, point: Point) -> impl Iterator<Item = Point> + '_ {
+        let x = point.x as i32;
+        let y = point.y as i32;
+        [(x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1)]
+            .into_iter()
+            .filter(|(x, y)| *x >= 0 && *y >= 0)
+            .map(|(x, y)| (x as usize, y as usize))
+            .filter(|(x, y)| *x < self.max_x && *y < self.max_y)
+            .map(|(x, y)| Point { x, y })
+    }
+
+    pub fn neighbours_with_diagonals(&self, point: Point) -> impl Iterator<Item = Point> + '_ {
+        let x = point.x as i32;
+        let y = point.y as i32;
+        (x - 1..=x + 1)
+            .flat_map(move |x| std::iter::repeat(x).zip(y - 1..=y + 1))
+            .filter(|(x, y)| *x >= 0 && *y >= 0)
+            .map(|(x, y)| (x as usize, y as usize))
+            .filter(|(x, y)| *x < self.max_x && *y < self.max_y)
+            .map(|(x, y)| Point { x, y })
+            .filter(move |p| point != *p)
+    }
+
+    pub fn len(&self) -> usize {
+        self.storage.len()
+    }
+}
+
+impl std::fmt::Display for Matrix {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        for (i, x) in self.storage.iter().enumerate() {
+            if i % self.max_x == 0 && i != 0 {
+                f.write_str("\n")?;
+            }
+            f.write_fmt(format_args!("{}\t", x))?;
+        }
+        f.write_str("\n")?;
+        Ok(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use std::collections::HashSet;
+
+    use anyhow::{anyhow, Result};
+
+    use super::{Matrix, Point};
+
+    #[test]
+    fn test_add_to_all() -> Result<()> {
+        let input = "00\n00";
+        let mut matrix = Matrix::new(&input).ok_or(anyhow!("Could not construct matrix"))?;
+        matrix.add_to_all(1);
+        let sum: u32 = matrix.storage.iter().sum();
+        assert_eq!(sum, 4);
+        Ok(())
+    }
+
+    #[test]
+    fn test_find() -> Result<()> {
+        let input = "01\n22";
+        let matrix = Matrix::new(&input).ok_or(anyhow!("Could not construct matrix"))?;
+        let mut iterator = matrix.find(0);
+        assert_eq!(iterator.next(), Some(Point { x: 0, y: 0 }));
+        assert_eq!(iterator.next(), None);
+
+        let mut iterator = matrix.find(1);
+        assert_eq!(iterator.next(), Some(Point { x: 1, y: 0 }));
+        assert_eq!(iterator.next(), None);
+
+        let mut iterator = matrix.find(2);
+        assert_eq!(iterator.next(), Some(Point { x: 0, y: 1 }));
+        assert_eq!(iterator.next(), Some(Point { x: 1, y: 1 }));
+        assert_eq!(iterator.next(), None);
+
+        let mut iterator = matrix.find(3);
+        assert_eq!(iterator.next(), None);
+        Ok(())
+    }
+
+    #[test]
+    fn test_neighbours() -> Result<()> {
+        let input = "012\n345\n678";
+        let matrix = Matrix::new(&input).ok_or(anyhow!("Could not construct matrix"))?;
+
+        let neighbours = matrix
+            .neighbours(Point { x: 0, y: 0 })
+            .collect::<HashSet<Point>>();
+        assert!(neighbours.contains(&Point { x: 1, y: 0 }));
+        assert!(neighbours.contains(&Point { x: 0, y: 1 }));
+        assert_eq!(neighbours.len(), 2);
+
+        let neighbours = matrix
+            .neighbours(Point { x: 1, y: 0 })
+            .collect::<HashSet<Point>>();
+        assert!(neighbours.contains(&Point { x: 0, y: 0 }));
+        assert!(neighbours.contains(&Point { x: 2, y: 0 }));
+        assert!(neighbours.contains(&Point { x: 1, y: 1 }));
+        assert_eq!(neighbours.len(), 3);
+
+        let neighbours = matrix
+            .neighbours(Point { x: 1, y: 1 })
+            .collect::<HashSet<Point>>();
+        assert!(neighbours.contains(&Point { x: 1, y: 0 }));
+        assert!(neighbours.contains(&Point { x: 0, y: 1 }));
+        assert!(neighbours.contains(&Point { x: 2, y: 1 }));
+        assert!(neighbours.contains(&Point { x: 1, y: 2 }));
+        assert_eq!(neighbours.len(), 4);
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_neighbours_with_diagonals() -> Result<()> {
+        let input = "012\n345\n678";
+        let matrix = Matrix::new(&input).ok_or(anyhow!("Could not construct matrix"))?;
+
+        let neighbours = matrix
+            .neighbours_with_diagonals(Point { x: 0, y: 0 })
+            .collect::<HashSet<Point>>();
+        assert!(neighbours.contains(&Point { x: 1, y: 0 }));
+        assert!(neighbours.contains(&Point { x: 0, y: 1 }));
+        assert!(neighbours.contains(&Point { x: 1, y: 1 }));
+        assert_eq!(neighbours.len(), 3);
+
+        let neighbours = matrix
+            .neighbours_with_diagonals(Point { x: 1, y: 0 })
+            .collect::<HashSet<Point>>();
+        assert!(neighbours.contains(&Point { x: 0, y: 0 }));
+        assert!(neighbours.contains(&Point { x: 2, y: 0 }));
+        assert!(neighbours.contains(&Point { x: 1, y: 1 }));
+        assert!(neighbours.contains(&Point { x: 0, y: 1 }));
+        assert!(neighbours.contains(&Point { x: 2, y: 1 }));
+        assert_eq!(neighbours.len(), 5);
+
+        let neighbours = matrix
+            .neighbours_with_diagonals(Point { x: 1, y: 1 })
+            .collect::<HashSet<Point>>();
+        assert!(neighbours.contains(&Point { x: 0, y: 0 }));
+        assert!(neighbours.contains(&Point { x: 0, y: 1 }));
+        assert!(neighbours.contains(&Point { x: 0, y: 2 }));
+        assert!(neighbours.contains(&Point { x: 1, y: 0 }));
+        assert!(neighbours.contains(&Point { x: 1, y: 2 }));
+        assert!(neighbours.contains(&Point { x: 2, y: 0 }));
+        assert!(neighbours.contains(&Point { x: 2, y: 1 }));
+        assert!(neighbours.contains(&Point { x: 2, y: 2 }));
+        assert_eq!(neighbours.len(), 8);
+
+        Ok(())
     }
 }
