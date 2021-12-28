@@ -31,6 +31,46 @@ impl Matrix {
         })
     }
 
+    #[allow(dead_code)]
+    pub fn construct_extended_matrix(&self) -> Matrix {
+        let new_storage = vec![0u32; self.len() * 25];
+        let new_max_x = self.max_x * 5;
+        let new_max_y = self.max_y * 5;
+        let mut new_matrix = Matrix {
+            storage: new_storage,
+            max_x: new_max_x,
+            max_y: new_max_y,
+        };
+
+        // for p in self.all_points() {
+        //     let val = self.value(&p).unwrap();
+        //     new_matrix.set(&p, *val)
+        // }
+
+        for p in new_matrix.all_points().collect::<Vec<Point>>() {
+            let value = if p.x >= self.max_x {
+                let p = Point {
+                    x: p.x - self.max_x,
+                    y: p.y,
+                };
+                new_matrix.value(&p).unwrap() + 1
+            } else if p.y >= self.max_y {
+                let p = Point {
+                    x: p.x,
+                    y: p.y - self.max_y,
+                };
+                new_matrix.value(&p).unwrap() + 1
+            } else {
+                *self.value(&p).unwrap()
+            };
+
+            let translated_val = if value <= 9 { value } else { 1 };
+            new_matrix.set(&p, translated_val);
+        }
+
+        new_matrix
+    }
+
     pub fn all_points(&self) -> impl Iterator<Item = Point> + '_ {
         (0..self.max_x)
             .flat_map(|x| std::iter::repeat(x).zip(0..self.max_y))
@@ -97,7 +137,7 @@ impl std::fmt::Display for Matrix {
             if i % self.max_x == 0 && i != 0 {
                 f.write_str("\n")?;
             }
-            f.write_fmt(format_args!("{}\t", x))?;
+            f.write_fmt(format_args!("{} ", x))?;
         }
         f.write_str("\n")?;
         Ok(())
