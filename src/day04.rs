@@ -92,8 +92,8 @@ impl BingoBoard {
         }
         cell.marked = true;
 
-        let row = self.row_completions.entry(cell.y).or_insert(0);
-        let column = self.column_completions.entry(cell.x).or_insert(0);
+        let row = self.row_completions.entry(cell.y).or_default();
+        let column = self.column_completions.entry(cell.x).or_default();
         *row += 1;
         *column += 1;
 

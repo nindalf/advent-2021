@@ -16,7 +16,7 @@ fn num_lantern_fish(input: &[u32], days: u64) -> Result<u64> {
         (8, 0),
     ]);
     for fish in input {
-        *fishes.entry(*fish).or_insert(0) += 1;
+        *fishes.entry(*fish).or_default() += 1;
     }
     for _ in 0..days {
         let new_spawn = *fishes.get(&0).ok_or(anyhow!("Hashmap get failed"))?;

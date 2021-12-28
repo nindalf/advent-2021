@@ -7,11 +7,11 @@ fn num_dangerous_points(input: &[String], allow_diagonals: bool) -> usize {
         .iter()
         .filter_map(|l| Line::new(l, allow_diagonals))
         .collect();
-    let mut points = HashMap::new();
+    let mut points: HashMap<Point, u32> = HashMap::new();
 
     for line in lines {
         for point in line {
-            *points.entry(point).or_insert(0) += 1;
+            *points.entry(point).or_default() += 1;
         }
     }
 

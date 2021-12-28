@@ -30,7 +30,7 @@ impl Polymer {
             .zip(template.chars().skip(1))
             .map(|p| Pair { 0: p })
             .fold(HashMap::new(), |mut acc, pair| {
-                *acc.entry(pair).or_insert(0) += 1;
+                *acc.entry(pair).or_default() += 1;
                 acc
             });
 
@@ -62,20 +62,20 @@ impl Polymer {
                 .iter()
                 .fold(HashMap::new(), |mut acc, (pair, occurrences)| {
                     let new_pairs = self.rules.get(pair).unwrap();
-                    *acc.entry(new_pairs.0).or_insert(0) += occurrences;
-                    *acc.entry(new_pairs.1).or_insert(0) += occurrences;
+                    *acc.entry(new_pairs.0).or_default() += occurrences;
+                    *acc.entry(new_pairs.1).or_default() += occurrences;
                     acc
                 });
     }
 
     #[allow(dead_code)]
     fn quantity_difference(&self) -> Option<u64> {
-        let mut char_counts =
+        let mut char_counts: HashMap<char, u64> =
             self.template
                 .iter()
                 .fold(HashMap::new(), |mut acc, (pair, count)| {
-                    *acc.entry(pair.0 .0).or_insert(0) += count;
-                    *acc.entry(pair.0 .1).or_insert(0) += count;
+                    *acc.entry(pair.0 .0).or_default() += count;
+                    *acc.entry(pair.0 .1).or_default() += count;
                     acc
                 });
 
