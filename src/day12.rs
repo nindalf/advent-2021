@@ -1,4 +1,7 @@
-use std::collections::{HashMap, HashSet, VecDeque};
+use std::{
+    collections::{HashMap, HashSet, VecDeque},
+    fmt::Write,
+};
 
 use anyhow::{anyhow, Result};
 
@@ -27,7 +30,7 @@ impl Graph {
     }
 
     fn add_connection(&mut self, connection: &str) -> Result<()> {
-        let mut parts = connection.split("-");
+        let mut parts = connection.split('-');
         let one = Node(
             parts
                 .next()
@@ -42,9 +45,12 @@ impl Graph {
         );
         self.nodes
             .entry(one.clone())
-            .or_insert(HashSet::new())
+            .or_insert_with(HashSet::new)
             .insert(two.clone());
-        self.nodes.entry(two).or_insert(HashSet::new()).insert(one);
+        self.nodes
+            .entry(two)
+            .or_insert_with(HashSet::new)
+            .insert(one);
         Ok(())
     }
 
@@ -52,7 +58,7 @@ impl Graph {
         self.nodes
             .get(node)
             .unwrap()
-            .into_iter()
+            .iter()
             .filter(|node| node.is_small())
     }
 
@@ -60,7 +66,7 @@ impl Graph {
         self.nodes
             .get(node)
             .unwrap()
-            .into_iter()
+            .iter()
             .filter(|node| !node.is_small())
     }
 
@@ -95,13 +101,13 @@ impl Graph {
                 continue;
             }
 
-            for connection in self.get_large_connections(&last_node) {
+            for connection in self.get_large_connections(last_node) {
                 let mut new_path = path.clone();
                 new_path.add_node(connection);
                 q.push_back(new_path);
             }
 
-            for connection in self.get_small_connections(&last_node) {
+            for connection in self.get_small_connections(last_node) {
                 if skip_small_connection(&path, connection) {
                     continue;
                 }
@@ -148,13 +154,15 @@ impl Path {
 
         small_nodes.len() > small_nodes_set.len()
     }
+}
 
-    fn to_string(&self) -> String {
-        let mut result = String::new();
+impl std::fmt::Display for Path {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         for s in &self.0 {
-            result = result + "-" + &s.0;
+            f.write_str(&s.0)?;
+            f.write_char('-')?;
         }
-        result
+        Ok(())
     }
 }
 

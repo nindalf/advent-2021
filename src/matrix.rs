@@ -42,11 +42,6 @@ impl Matrix {
             max_y: new_max_y,
         };
 
-        // for p in self.all_points() {
-        //     let val = self.value(&p).unwrap();
-        //     new_matrix.set(&p, *val)
-        // }
-
         for p in new_matrix.all_points().collect::<Vec<Point>>() {
             let value = if p.x >= self.max_x {
                 let p = Point {
@@ -146,7 +141,7 @@ impl std::fmt::Display for Matrix {
 
 impl Point {
     pub fn new(s: &str) -> Option<Point> {
-        let mut parts = s.split(",");
+        let mut parts = s.split(',');
         let x = parts.next()?.parse::<usize>().ok()?;
         let y = parts.next()?.parse::<usize>().ok()?;
         Some(Point { x, y })

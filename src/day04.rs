@@ -8,7 +8,7 @@ fn winning_and_losing_bingo_combination(input: &str) -> (Option<u32>, Option<u32
         None => return (None, None),
     };
     let called_numbers: Vec<u32> = first_line
-        .split(",")
+        .split(',')
         .filter_map(|s| s.parse::<u32>().ok())
         .collect();
 
@@ -31,8 +31,8 @@ fn winning_and_losing_bingo_combination(input: &str) -> (Option<u32>, Option<u32
     if completions.len() < 2 {
         return (winning, None);
     }
-    let losing = completions.get(completions.len() - 1).copied();
-    return (winning, losing);
+    let losing = completions.last().copied();
+    (winning, losing)
 }
 
 #[derive(Debug)]
@@ -55,7 +55,7 @@ struct Cell {
 impl BingoBoard {
     fn new(lines: &str) -> anyhow::Result<BingoBoard> {
         let mut number_to_cell = HashMap::new();
-        for (y, line) in lines.split("\n").enumerate() {
+        for (y, line) in lines.split('\n').enumerate() {
             for (x, value) in line.split_ascii_whitespace().enumerate() {
                 let number = value.parse::<u32>()?;
                 let marked = false;
@@ -70,7 +70,7 @@ impl BingoBoard {
         }
         let row_completions = HashMap::new();
         let column_completions = HashMap::new();
-        let side_len = lines.split("\n").count();
+        let side_len = lines.split('\n').count();
         let completed = false;
         Ok(BingoBoard {
             number_to_cell,

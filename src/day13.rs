@@ -24,7 +24,7 @@ enum Fold {
 
 impl Fold {
     fn new(s: &str) -> Option<Fold> {
-        let mut parts = s.split("=");
+        let mut parts = s.split('=');
         parts.next();
         let index = parts.next()?.parse::<usize>().ok()?;
         match s.chars().nth(11) {
@@ -43,14 +43,14 @@ impl Paper {
             .next()
             .ok_or(anyhow::anyhow!("Invalid input"))?
             .split_ascii_whitespace()
-            .filter_map(|s| Point::new(s))
+            .filter_map(Point::new)
             .collect();
 
         let folds = parts
             .next()
             .ok_or(anyhow::anyhow!("Invalid input"))?
-            .split("\n")
-            .filter_map(|s| Fold::new(s))
+            .split('\n')
+            .filter_map(Fold::new)
             .collect();
 
         Ok(Paper { points, folds })
@@ -109,7 +109,7 @@ impl Point {
         match fold {
             Fold::X(index) => {
                 if self.x < *index {
-                    return *self;
+                    *self
                 } else {
                     Point {
                         x: 2 * index - self.x,
@@ -119,7 +119,7 @@ impl Point {
             }
             Fold::Y(index) => {
                 if self.y < *index {
-                    return *self;
+                    *self
                 } else {
                     Point {
                         x: self.x,

@@ -51,7 +51,9 @@ fn median_completion_points(input: &[String]) -> u64 {
         .map(|line| completion_points(line))
         .collect();
 
-    scores.sort();
+    // Clippy advice: an unstable sort would perform faster without any
+    // observable difference for this data type
+    scores.sort_unstable();
 
     scores[scores.len() / 2]
 }

@@ -86,7 +86,7 @@ impl Iterator for Line {
             self.ended = true;
         }
 
-        return Some(result);
+        Some(result)
     }
 }
 
@@ -99,7 +99,7 @@ struct Point {
 impl Point {
     fn new(input: Option<&str>) -> Result<Point> {
         let input = input.ok_or(anyhow!("invalid point input"))?;
-        let mut parts = input.split(",");
+        let mut parts = input.split(',');
         let x = parts
             .next()
             .ok_or(anyhow!("invalid point"))?

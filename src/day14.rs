@@ -37,8 +37,8 @@ impl Polymer {
         let rules: HashMap<Pair, (Pair, Pair)> = parts
             .next()
             .ok_or(anyhow::anyhow!("Invalid input"))?
-            .split("\n")
-            .filter_map(|s| Pair::new_group(s))
+            .split('\n')
+            .filter_map(Pair::new_group)
             .collect();
 
         Ok(Polymer {
@@ -83,7 +83,7 @@ impl Polymer {
         *char_counts.entry(self.end).or_default() += 1;
 
         char_counts.iter_mut().for_each(|(_, value)| {
-            *value = *value / 2;
+            *value /= 2;
         });
 
         Some(char_counts.values().max()? - char_counts.values().min()?)

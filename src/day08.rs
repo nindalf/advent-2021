@@ -5,16 +5,13 @@ fn count_1478s(input: &[String]) -> u32 {
     input
         .iter()
         .filter_map(|s| {
-            let mut parts = s.split("|");
+            let mut parts = s.split('|');
             parts.next();
             parts.next()
         })
         .flat_map(|s| s.split_ascii_whitespace())
-        .filter(|s| match s.len() {
-            // Length scorrespond to 1, 7, 4, 8
-            2 | 3 | 4 | 7 => true,
-            _ => false,
-        })
+        // Length scorrespond to 1, 7, 4, 8
+        .filter(|s| matches!(s.len(), 2 | 3 | 4 | 7))
         .count() as u32
 }
 
@@ -24,24 +21,14 @@ fn decode_book(input: &[String]) -> u32 {
 }
 
 fn decode_line(line: &str) -> Option<u32> {
-    let mut parts = line.split("|");
+    let mut parts = line.split('|');
     let signals = parts.next()?;
-    let one = Digit::new(
-        signals
-            .split_ascii_whitespace()
-            .filter(|s| s.len() == 2)
-            .next()?,
-    );
-    let four = Digit::new(
-        signals
-            .split_ascii_whitespace()
-            .filter(|s| s.len() == 4)
-            .next()?,
-    );
+    let one = Digit::new(signals.split_ascii_whitespace().find(|s| s.len() == 2)?);
+    let four = Digit::new(signals.split_ascii_whitespace().find(|s| s.len() == 4)?);
     let output = parts.next()?;
     let digit_values: Vec<u32> = output
         .split_ascii_whitespace()
-        .map(|s| Digit::new(s))
+        .map(Digit::new)
         .map(|d| d.decode(&one, &four))
         .rev()
         .collect();

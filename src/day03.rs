@@ -26,14 +26,14 @@ fn process(input: &[String], process_fn: &dyn Fn(&[char]) -> char) -> anyhow::Re
         binary_digits.push(digit);
     }
     let result = u32::from_str_radix(&binary_digits, 2)?;
-    return Ok(result);
+    Ok(result)
 }
 
 fn process_repeatedly(
     input: &[String],
     process_fn: &dyn Fn(&[char]) -> char,
 ) -> anyhow::Result<u32> {
-    let mut temp: Vec<String> = input.into_iter().map(|s| s.to_owned()).collect();
+    let mut temp: Vec<String> = input.iter().map(|s| s.to_owned()).collect();
     for index in 0..input[0].len() {
         if temp.len() == 1 {
             break;
@@ -49,11 +49,11 @@ fn process_repeatedly(
             .collect();
     }
     let result = u32::from_str_radix(&temp[0], 2)?;
-    return Ok(result);
+    Ok(result)
 }
 
 fn split_lines(input: &[String]) -> Vec<Vec<char>> {
-    if input.len() < 1 {
+    if input.is_empty() {
         return Vec::new();
     }
     let mut result: Vec<Vec<char>> = Vec::with_capacity(input[0].len());
@@ -65,11 +65,11 @@ fn split_lines(input: &[String]) -> Vec<Vec<char>> {
             result[i].push(character);
         }
     }
-    return result;
+    result
 }
 
 fn nth_line(input: &[String], n: usize) -> Vec<char> {
-    if input.len() < 1 {
+    if input.is_empty() {
         return Vec::new();
     }
     let mut result: Vec<char> = Vec::with_capacity(input.len());
@@ -78,7 +78,7 @@ fn nth_line(input: &[String], n: usize) -> Vec<char> {
             result.push(c);
         }
     }
-    return result;
+    result
 }
 
 fn most_common_digit(input: &[char]) -> char {
@@ -86,7 +86,7 @@ fn most_common_digit(input: &[char]) -> char {
     if zeros > ones {
         return '0';
     }
-    return '1';
+    '1'
 }
 
 fn least_common_digit(input: &[char]) -> char {
@@ -94,7 +94,7 @@ fn least_common_digit(input: &[char]) -> char {
     if zeros <= ones {
         return '0';
     }
-    return '1';
+    '1'
 }
 
 fn counts(input: &[char]) -> (u32, u32) {
@@ -102,7 +102,7 @@ fn counts(input: &[char]) -> (u32, u32) {
         if *item == '0' {
             return (zeros + 1, ones);
         }
-        return (zeros, ones + 1);
+        (zeros, ones + 1)
     })
 }
 
