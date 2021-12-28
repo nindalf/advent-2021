@@ -87,12 +87,7 @@ impl Graph {
         let mut result = HashSet::new();
         let mut q: VecDeque<Path> = VecDeque::new();
         q.push_back(start);
-        while !q.is_empty() {
-            let path = match q.pop_back() {
-                Some(path) => path,
-                None => continue,
-            };
-
+        while let Some(path) = q.pop_front() {
             let last_node = path.last_node();
             // path is complete
             if last_node == &end {

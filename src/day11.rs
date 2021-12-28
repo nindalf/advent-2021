@@ -12,12 +12,8 @@ impl Matrix {
             let mut clear_q = HashSet::new();
             self.add_to_all(1);
             self.find(10).for_each(|flasher| q.push_back(flasher));
-            while !q.is_empty() {
+            while let Some(flasher) = q.pop_front() {
                 result += 1;
-                let flasher = match q.pop_front() {
-                    Some(point) => point,
-                    None => continue,
-                };
                 clear_q.insert(flasher);
 
                 for neighbour in self
@@ -54,11 +50,7 @@ impl Matrix {
             let mut clear_q = HashSet::new();
             self.add_to_all(1);
             self.find(10).for_each(|flasher| q.push_back(flasher));
-            while !q.is_empty() {
-                let flasher = match q.pop_front() {
-                    Some(point) => point,
-                    None => continue,
-                };
+            while let Some(flasher) = q.pop_front() {
                 clear_q.insert(flasher);
 
                 for neighbour in self
