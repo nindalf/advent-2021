@@ -34,12 +34,7 @@ impl Matrix {
         for point in self.all_points() {
             let mut basin_size = 0;
             q.push_back(point);
-            while !q.is_empty() {
-                let point = match q.pop_front() {
-                    Some(point) => point,
-                    None => continue,
-                };
-
+            while let Some(point) = q.pop_front() {
                 if *self.value(&point).unwrap() == 9 || visited.contains(&point) {
                     visited.insert(point);
                     continue;

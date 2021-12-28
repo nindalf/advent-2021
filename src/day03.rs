@@ -74,9 +74,8 @@ fn nth_line(input: &[String], n: usize) -> Vec<char> {
     }
     let mut result: Vec<char> = Vec::with_capacity(input.len());
     for line in input {
-        match line.chars().nth(n) {
-            Some(c) => result.push(c),
-            None => {}
+        if let Some(c) = line.chars().nth(n) {
+            result.push(c);
         }
     }
     return result;

@@ -20,16 +20,13 @@ impl Matrix {
                     .neighbours_with_diagonals(flasher)
                     .collect::<Vec<Point>>()
                 {
-                    match self.value(&neighbour).copied() {
-                        Some(val) => {
-                            if val <= 9 {
-                                self.add(&neighbour, 1);
-                            }
-                            if val == 9 && !clear_q.contains(&neighbour) {
-                                q.push_back(neighbour);
-                            }
+                    if let Some(val) = self.value(&neighbour).copied() {
+                        if val <= 9 {
+                            self.add(&neighbour, 1);
                         }
-                        None => continue,
+                        if val == 9 && !clear_q.contains(&neighbour) {
+                            q.push_back(neighbour);
+                        }
                     }
                 }
             }
@@ -57,16 +54,13 @@ impl Matrix {
                     .neighbours_with_diagonals(flasher)
                     .collect::<Vec<Point>>()
                 {
-                    match self.value(&neighbour).copied() {
-                        Some(val) => {
-                            if val <= 9 {
-                                self.add(&neighbour, 1);
-                            }
-                            if val == 9 && !clear_q.contains(&neighbour) {
-                                q.push_back(neighbour);
-                            }
+                    if let Some(val) = self.value(&neighbour).copied() {
+                        if val <= 9 {
+                            self.add(&neighbour, 1);
                         }
-                        None => continue,
+                        if val == 9 && !clear_q.contains(&neighbour) {
+                            q.push_back(neighbour);
+                        }
                     }
                 }
             }
