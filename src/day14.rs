@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use anyhow::Result;
+use anyhow::{anyhow, Result};
 
 struct Polymer {
     template: HashMap<Pair, u64>,
@@ -16,15 +16,9 @@ impl Polymer {
     #[allow(dead_code)]
     fn new(input: &str) -> Result<Polymer> {
         let mut parts = input.split("\n\n");
-        let template = parts.next().ok_or(anyhow::anyhow!("Invalid input"))?;
-        let start = template
-            .chars()
-            .next()
-            .ok_or(anyhow::anyhow!("Invalid input"))?;
-        let end = template
-            .chars()
-            .last()
-            .ok_or(anyhow::anyhow!("Invalid input"))?;
+        let template = parts.next().ok_or(anyhow!("Invalid input"))?;
+        let start = template.chars().next().ok_or(anyhow!("Invalid input"))?;
+        let end = template.chars().last().ok_or(anyhow!("Invalid input"))?;
         let template = template
             .chars()
             .zip(template.chars().skip(1))
@@ -36,7 +30,7 @@ impl Polymer {
 
         let rules: HashMap<Pair, (Pair, Pair)> = parts
             .next()
-            .ok_or(anyhow::anyhow!("Invalid input"))?
+            .ok_or(anyhow!("Invalid input"))?
             .split('\n')
             .filter_map(Pair::new_group)
             .collect();
@@ -69,7 +63,7 @@ impl Polymer {
     }
 
     #[allow(dead_code)]
-    fn quantity_difference(&self) -> Option<u64> {
+    fn quantity_difference(&self) -> Result<u64> {
         let mut char_counts: HashMap<char, u64> =
             self.template
                 .iter()
@@ -86,7 +80,8 @@ impl Polymer {
             *value /= 2;
         });
 
-        Some(char_counts.values().max()? - char_counts.values().min()?)
+        Ok(char_counts.values().max().ok_or(anyhow!("Empty values"))?
+            - char_counts.values().min().ok_or(anyhow!("Empty values"))?)
     }
 }
 
@@ -117,57 +112,29 @@ mod tests {
 
     #[test]
     fn part_1_test() -> Result<()> {
-        let input = crate::files::read_string("inputs/day14-test.txt")?;
-        let mut polymer = super::Polymer::new(&input)?;
-        polymer.pair_insertion_multiple(10);
-        assert_eq!(
-            polymer
-                .quantity_difference()
-                .ok_or(anyhow::anyhow!("Empty"))?,
-            1588
-        );
-        Ok(())
+        test("inputs/day14-test.txt", 10, 1588)
     }
 
     #[test]
     fn part_1_real() -> Result<()> {
-        let input = crate::files::read_string("inputs/day14.txt")?;
-        let mut polymer = super::Polymer::new(&input)?;
-        polymer.pair_insertion_multiple(10);
-        assert_eq!(
-            polymer
-                .quantity_difference()
-                .ok_or(anyhow::anyhow!("Empty"))?,
-            3587
-        );
-        Ok(())
+        test("inputs/day14.txt", 10, 3587)
     }
 
     #[test]
     fn part_2_test() -> Result<()> {
-        let input = crate::files::read_string("inputs/day14-test.txt")?;
-        let mut polymer = super::Polymer::new(&input)?;
-        polymer.pair_insertion_multiple(40);
-        assert_eq!(
-            polymer
-                .quantity_difference()
-                .ok_or(anyhow::anyhow!("Empty"))?,
-            2188189693529
-        );
-        Ok(())
+        test("inputs/day14-test.txt", 40, 2188189693529)
     }
 
     #[test]
     fn part_2_real() -> Result<()> {
-        let input = crate::files::read_string("inputs/day14.txt")?;
+        test("inputs/day14.txt", 40, 3906445077999)
+    }
+
+    fn test(test_file: &str, iterations: u32, expected: u64) -> Result<()> {
+        let input = crate::files::read_string(test_file)?;
         let mut polymer = super::Polymer::new(&input)?;
-        polymer.pair_insertion_multiple(40);
-        assert_eq!(
-            polymer
-                .quantity_difference()
-                .ok_or(anyhow::anyhow!("Empty"))?,
-            3906445077999
-        );
+        polymer.pair_insertion_multiple(iterations);
+        assert_eq!(polymer.quantity_difference()?, expected);
         Ok(())
     }
 }

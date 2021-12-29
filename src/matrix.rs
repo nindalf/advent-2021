@@ -1,3 +1,7 @@
+use std::fmt::Write;
+
+use anyhow::{anyhow, Result};
+
 pub struct Matrix {
     storage: Vec<u32>,
     pub max_x: usize,
@@ -12,19 +16,20 @@ pub struct Point {
 
 impl Matrix {
     #[allow(dead_code)]
-    pub fn new(input: &str) -> Option<Matrix> {
+    pub fn new(input: &str) -> Result<Matrix> {
         let storage = input
             .split("")
             .filter_map(|d| d.parse::<u32>().ok())
             .collect();
         let max_x = input
             .split_ascii_whitespace()
-            .next()?
+            .next()
+            .ok_or(anyhow!("Invalid input"))?
             .split("")
             .filter_map(|d| d.parse::<u32>().ok())
             .count();
         let max_y = input.split_ascii_whitespace().count();
-        Some(Matrix {
+        Ok(Matrix {
             storage,
             max_x,
             max_y,
@@ -130,11 +135,11 @@ impl std::fmt::Display for Matrix {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         for (i, x) in self.storage.iter().enumerate() {
             if i % self.max_x == 0 && i != 0 {
-                f.write_str("\n")?;
+                f.write_char('\n')?;
             }
             f.write_fmt(format_args!("{} ", x))?;
         }
-        f.write_str("\n")?;
+        f.write_char('\n')?;
         Ok(())
     }
 }
@@ -152,14 +157,14 @@ impl Point {
 mod tests {
     use std::collections::HashSet;
 
-    use anyhow::{anyhow, Result};
+    use anyhow::Result;
 
     use super::{Matrix, Point};
 
     #[test]
     fn test_add_to_all() -> Result<()> {
         let input = "00\n00";
-        let mut matrix = Matrix::new(&input).ok_or(anyhow!("Could not construct matrix"))?;
+        let mut matrix = Matrix::new(input)?;
         matrix.add_to_all(1);
         let sum: u32 = matrix.storage.iter().sum();
         assert_eq!(sum, 4);
@@ -169,7 +174,7 @@ mod tests {
     #[test]
     fn test_find() -> Result<()> {
         let input = "01\n22";
-        let matrix = Matrix::new(&input).ok_or(anyhow!("Could not construct matrix"))?;
+        let matrix = Matrix::new(input)?;
         let mut iterator = matrix.find(0);
         assert_eq!(iterator.next(), Some(Point { x: 0, y: 0 }));
         assert_eq!(iterator.next(), None);
@@ -191,7 +196,7 @@ mod tests {
     #[test]
     fn test_neighbours() -> Result<()> {
         let input = "012\n345\n678";
-        let matrix = Matrix::new(&input).ok_or(anyhow!("Could not construct matrix"))?;
+        let matrix = Matrix::new(input)?;
 
         let neighbours = matrix
             .neighbours(Point { x: 0, y: 0 })
@@ -223,7 +228,7 @@ mod tests {
     #[test]
     fn test_neighbours_with_diagonals() -> Result<()> {
         let input = "012\n345\n678";
-        let matrix = Matrix::new(&input).ok_or(anyhow!("Could not construct matrix"))?;
+        let matrix = Matrix::new(input)?;
 
         let neighbours = matrix
             .neighbours_with_diagonals(Point { x: 0, y: 0 })

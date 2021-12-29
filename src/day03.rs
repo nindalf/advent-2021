@@ -112,33 +112,52 @@ mod tests {
 
     #[test]
     fn part_1_test() -> Result<()> {
-        let input = crate::files::read_lines("inputs/day3-test.txt")?;
-        assert_eq!(super::gamma(&input)?, 22);
-        assert_eq!(super::epsilon(&input)?, 9);
-        Ok(())
+        test(
+            "inputs/day3-test.txt",
+            &super::gamma,
+            22,
+            &super::epsilon,
+            9,
+        )
     }
 
     #[test]
     fn part_1_real() -> Result<()> {
-        let input = crate::files::read_lines("inputs/day3.txt")?;
-        assert_eq!(super::gamma(&input)?, 199);
-        assert_eq!(super::epsilon(&input)?, 3896);
-        Ok(())
+        test("inputs/day3.txt", &super::gamma, 199, &super::epsilon, 3896)
     }
 
     #[test]
     fn part_2_test() -> Result<()> {
-        let input = crate::files::read_lines("inputs/day3-test.txt")?;
-        assert_eq!(super::oxygen_rating(&input)?, 23);
-        assert_eq!(super::co2_rating(&input)?, 10);
-        Ok(())
+        test(
+            "inputs/day3-test.txt",
+            &super::oxygen_rating,
+            23,
+            &super::co2_rating,
+            10,
+        )
     }
 
     #[test]
     fn part_2_real() -> Result<()> {
-        let input = crate::files::read_lines("inputs/day3.txt")?;
-        assert_eq!(super::oxygen_rating(&input)?, 509);
-        assert_eq!(super::co2_rating(&input)?, 2693);
+        test(
+            "inputs/day3.txt",
+            &super::oxygen_rating,
+            509,
+            &super::co2_rating,
+            2693,
+        )
+    }
+
+    fn test(
+        test_file: &str,
+        function_one: &dyn Fn(&[String]) -> Result<u32>,
+        expected_one: u32,
+        function_two: &dyn Fn(&[String]) -> Result<u32>,
+        expected_two: u32,
+    ) -> Result<()> {
+        let input = crate::files::read_lines(test_file)?;
+        assert_eq!(function_one(&input)?, expected_one);
+        assert_eq!(function_two(&input)?, expected_two);
         Ok(())
     }
 }

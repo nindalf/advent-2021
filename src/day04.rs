@@ -1,38 +1,66 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, num::ParseIntError};
 
-#[allow(dead_code)]
-fn winning_and_losing_bingo_combination(input: &str) -> (Option<u32>, Option<u32>) {
-    let mut parts = input.split("\n\n");
-    let first_line = match parts.next() {
-        Some(line) => line,
-        None => return (None, None),
-    };
-    let called_numbers: Vec<u32> = first_line
-        .split(',')
-        .filter_map(|s| s.parse::<u32>().ok())
-        .collect();
+use anyhow::{anyhow, Result};
 
-    let mut boards: Vec<BingoBoard> = parts.filter_map(|s| BingoBoard::new(s).ok()).collect();
-    let mut completions = Vec::with_capacity(boards.len());
+struct BingoGame {
+    boards: Vec<BingoBoard>,
+    called_numbers: Vec<u32>,
+    completions: Vec<u32>,
+}
 
-    for number in called_numbers {
-        for board in &mut boards {
-            if board.completed {
-                continue;
-            }
-            board.mark(number);
-            if board.completed {
-                completions.push(board.unmarked_number_sum() * number);
+impl BingoGame {
+    #[allow(dead_code)]
+    fn new(input: &str) -> Result<BingoGame> {
+        let mut parts = input.split("\n\n");
+        let first_line = parts.next().ok_or(anyhow!("Invalid input"))?;
+        let boards = parts
+            .map(BingoBoard::new)
+            .collect::<Result<Vec<BingoBoard>>>()?;
+        let called_numbers: Vec<u32> = first_line
+            .split(',')
+            .map(|s| s.parse::<u32>())
+            .collect::<core::result::Result<Vec<u32>, ParseIntError>>(
+        )?;
+        let completions = Vec::new();
+
+        Ok(BingoGame {
+            boards,
+            called_numbers,
+            completions,
+        })
+    }
+
+    #[allow(dead_code)]
+    fn call_all_numbers(&mut self) {
+        for number in self.called_numbers.iter() {
+            for board in self.boards.iter_mut() {
+                if board.completed {
+                    continue;
+                }
+                board.mark(*number);
+                if board.completed {
+                    self.completions.push(board.unmarked_number_sum() * number);
+                }
             }
         }
     }
 
-    let winning = completions.get(0).copied();
-    if completions.len() < 2 {
-        return (winning, None);
+    #[allow(dead_code)]
+    fn winning_board(&self) -> Result<u32> {
+        self.completions
+            .get(0)
+            .copied()
+            .ok_or(anyhow!("No winning board"))
     }
-    let losing = completions.last().copied();
-    (winning, losing)
+
+    #[allow(dead_code)]
+    fn losing_board(&self) -> Result<u32> {
+        self.completions
+            .iter()
+            .last()
+            .copied()
+            .ok_or(anyhow!("No winning board"))
+    }
 }
 
 #[derive(Debug)]
@@ -53,7 +81,7 @@ struct Cell {
 }
 
 impl BingoBoard {
-    fn new(lines: &str) -> anyhow::Result<BingoBoard> {
+    fn new(lines: &str) -> Result<BingoBoard> {
         let mut number_to_cell = HashMap::new();
         for (y, line) in lines.split('\n').enumerate() {
             for (x, value) in line.split_ascii_whitespace().enumerate() {
@@ -113,37 +141,40 @@ impl BingoBoard {
 
 #[cfg(test)]
 mod tests {
-    use anyhow::{anyhow, Result};
+    use anyhow::Result;
+
+    use super::BingoGame;
 
     #[test]
     fn part_1_test() -> Result<()> {
-        let input = crate::files::read_string("inputs/day4-test.txt")?;
-        let result = super::winning_and_losing_bingo_combination(&input);
-        assert_eq!(result.0.ok_or(anyhow!("Failed to find result"))?, 4512);
-        Ok(())
+        test("inputs/day4-test.txt", &BingoGame::winning_board, 4512)
     }
 
     #[test]
     fn part_1_real() -> Result<()> {
-        let input = crate::files::read_string("inputs/day4.txt")?;
-        let result = super::winning_and_losing_bingo_combination(&input);
-        assert_eq!(result.0.ok_or(anyhow!("Failed to find result"))?, 35711);
-        Ok(())
+        test("inputs/day4.txt", &BingoGame::winning_board, 35711)
     }
 
     #[test]
     fn part_2_test() -> Result<()> {
-        let input = crate::files::read_string("inputs/day4-test.txt")?;
-        let result = super::winning_and_losing_bingo_combination(&input);
-        assert_eq!(result.1.ok_or(anyhow!("Failed to find result"))?, 1924);
-        Ok(())
+        test("inputs/day4-test.txt", &BingoGame::losing_board, 1924)
     }
 
     #[test]
     fn part_2_real() -> Result<()> {
-        let input = crate::files::read_string("inputs/day4.txt")?;
-        let result = super::winning_and_losing_bingo_combination(&input);
-        assert_eq!(result.1.ok_or(anyhow!("Failed to find result"))?, 5586);
+        test("inputs/day4.txt", &BingoGame::losing_board, 5586)
+    }
+
+    fn test(
+        test_file: &str,
+        function: &dyn Fn(&BingoGame) -> Result<u32>,
+        expected: u32,
+    ) -> Result<()> {
+        let input = crate::files::read_string(test_file)?;
+        let mut bingo_game = BingoGame::new(&input)?;
+        bingo_game.call_all_numbers();
+        let result = function(&bingo_game)?;
+        assert_eq!(result, expected);
         Ok(())
     }
 }

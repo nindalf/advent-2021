@@ -111,29 +111,27 @@ mod tests {
 
     #[test]
     fn part_1_test() -> Result<()> {
-        let input = crate::files::read_lines("inputs/day8-test.txt")?;
-        assert_eq!(super::count_1478s(&input), 26);
-        Ok(())
+        test("inputs/day8-test.txt", &super::count_1478s, 26)
     }
 
     #[test]
     fn part_1_real() -> Result<()> {
-        let input = crate::files::read_lines("inputs/day8.txt")?;
-        assert_eq!(super::count_1478s(&input), 519);
-        Ok(())
+        test("inputs/day8.txt", &super::count_1478s, 519)
     }
 
     #[test]
     fn part_2_test() -> Result<()> {
-        let input = crate::files::read_lines("inputs/day8-test.txt")?;
-        assert_eq!(super::decode_book(&input), 61229);
-        Ok(())
+        test("inputs/day8-test.txt", &super::decode_book, 61229)
     }
 
     #[test]
     fn part_2_real() -> Result<()> {
-        let input = crate::files::read_lines("inputs/day8.txt")?;
-        assert_eq!(super::decode_book(&input), 1027483);
+        test("inputs/day8.txt", &super::decode_book, 1027483)
+    }
+
+    fn test(test_file: &str, function: &dyn Fn(&[String]) -> u32, expected: u32) -> Result<()> {
+        let input = crate::files::read_lines(test_file)?;
+        assert_eq!(function(&input), expected);
         Ok(())
     }
 }

@@ -57,37 +57,38 @@ impl Matrix {
 
 #[cfg(test)]
 mod tests {
-    use anyhow::{anyhow, Result};
+    use anyhow::Result;
+
+    use crate::matrix::Matrix;
 
     #[test]
     fn part_1_test() -> Result<()> {
-        let input = crate::files::read_string("inputs/day9-test.txt")?;
-        let matrix = super::Matrix::new(&input).ok_or(anyhow!("Could not construct matrix"))?;
-        assert_eq!(matrix.low_point_value_sum(), 15);
-        Ok(())
+        test("inputs/day9-test.txt", &Matrix::low_point_value_sum, 15)
     }
 
     #[test]
     fn part_1_real() -> Result<()> {
-        let input = crate::files::read_string("inputs/day9.txt")?;
-        let matrix = super::Matrix::new(&input).ok_or(anyhow!("Could not construct matrix"))?;
-        assert_eq!(matrix.low_point_value_sum(), 528);
-        Ok(())
+        test("inputs/day9.txt", &Matrix::low_point_value_sum, 528)
     }
 
     #[test]
     fn part_2_test() -> Result<()> {
-        let input = crate::files::read_string("inputs/day9-test.txt")?;
-        let matrix = super::Matrix::new(&input).ok_or(anyhow!("Could not construct matrix"))?;
-        assert_eq!(matrix.top_basin_sizes_product(), 1134);
-        Ok(())
+        test(
+            "inputs/day9-test.txt",
+            &Matrix::top_basin_sizes_product,
+            1134,
+        )
     }
 
     #[test]
     fn part_2_real() -> Result<()> {
-        let input = crate::files::read_string("inputs/day9.txt")?;
-        let matrix = super::Matrix::new(&input).ok_or(anyhow!("Could not construct matrix"))?;
-        assert_eq!(matrix.top_basin_sizes_product(), 920448);
+        test("inputs/day9.txt", &Matrix::top_basin_sizes_product, 920448)
+    }
+
+    fn test(test_file: &str, function: &dyn Fn(&Matrix) -> u32, expected: u32) -> Result<()> {
+        let input = crate::files::read_string(test_file)?;
+        let matrix = super::Matrix::new(&input)?;
+        assert_eq!(function(&matrix), expected);
         Ok(())
     }
 }

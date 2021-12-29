@@ -135,41 +135,38 @@ impl Point {
 mod tests {
     use anyhow::Result;
 
+    use super::Paper;
+
     #[test]
     fn part_1_test() -> Result<()> {
-        let input = crate::files::read_string("inputs/day13-test.txt")?;
-        let mut paper = super::Paper::new(&input)?;
-        paper.fold_once()?;
-        assert_eq!(paper.num_remaining_points(), 17);
-        Ok(())
+        test("inputs/day13-test.txt", &Paper::fold_once, 17)
     }
 
     #[test]
     fn part_1_real() -> Result<()> {
-        let input = crate::files::read_string("inputs/day13.txt")?;
-        let mut paper = super::Paper::new(&input)?;
-        paper.fold_once()?;
-        assert_eq!(paper.num_remaining_points(), 802);
-        Ok(())
+        test("inputs/day13.txt", &Paper::fold_once, 802)
     }
 
     #[test]
     fn part_2_test() -> Result<()> {
-        let input = crate::files::read_string("inputs/day13-test.txt")?;
-        let mut paper = super::Paper::new(&input)?;
-        paper.fold_completely()?;
-        println!("{}", paper);
-        assert_eq!(paper.num_remaining_points(), 16);
-        Ok(())
+        test("inputs/day13-test.txt", &Paper::fold_completely, 16)
     }
 
     #[test]
     fn part_2_real() -> Result<()> {
-        let input = crate::files::read_string("inputs/day13.txt")?;
-        let mut paper = super::Paper::new(&input)?;
-        paper.fold_completely()?;
-        println!("{}", paper);
-        assert_eq!(paper.num_remaining_points(), 103);
+        test("inputs/day13.txt", &Paper::fold_completely, 103)
+    }
+
+    fn test(
+        test_file: &str,
+        function: &dyn Fn(&mut Paper) -> Result<()>,
+        expected: usize,
+    ) -> Result<()> {
+        let input = crate::files::read_string(test_file)?;
+        let mut paper = Paper::new(&input)?;
+        function(&mut paper)?;
+
+        assert_eq!(paper.num_remaining_points(), expected);
         Ok(())
     }
 }

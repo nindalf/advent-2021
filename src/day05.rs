@@ -118,33 +118,43 @@ mod tests {
 
     #[test]
     fn part_1_test() -> Result<()> {
-        let input = crate::files::read_lines("inputs/day5-test.txt")?;
-        let result = super::num_dangerous_points(&input, false);
-        assert_eq!(result, 5);
-        Ok(())
+        test(
+            "inputs/day5-test.txt",
+            &super::num_dangerous_points,
+            false,
+            5,
+        )
     }
 
     #[test]
     fn part_1_real() -> Result<()> {
-        let input = crate::files::read_lines("inputs/day5.txt")?;
-        let result = super::num_dangerous_points(&input, false);
-        assert_eq!(result, 7269);
-        Ok(())
+        test("inputs/day5.txt", &super::num_dangerous_points, false, 7269)
     }
 
     #[test]
     fn part_2_test() -> Result<()> {
-        let input = crate::files::read_lines("inputs/day5-test.txt")?;
-        let result = super::num_dangerous_points(&input, true);
-        assert_eq!(result, 12);
-        Ok(())
+        test(
+            "inputs/day5-test.txt",
+            &super::num_dangerous_points,
+            true,
+            12,
+        )
     }
 
     #[test]
     fn part_2_real() -> Result<()> {
-        let input = crate::files::read_lines("inputs/day5.txt")?;
-        let result = super::num_dangerous_points(&input, true);
-        assert_eq!(result, 21140);
+        test("inputs/day5.txt", &super::num_dangerous_points, true, 21140)
+    }
+
+    fn test(
+        test_file: &str,
+        function: &dyn Fn(&[String], bool) -> usize,
+        allow_diagonals: bool,
+        expected: usize,
+    ) -> Result<()> {
+        let input = crate::files::read_lines(test_file)?;
+        let result = function(&input, allow_diagonals);
+        assert_eq!(result, expected);
         Ok(())
     }
 }

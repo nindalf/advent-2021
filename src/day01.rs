@@ -27,33 +27,32 @@ mod tests {
 
     #[test]
     fn part_1_test() -> Result<()> {
-        let input = crate::files::read_numbers("inputs/day1-test.txt")?;
-        let result = super::number_of_increases(&input);
-        assert_eq!(result, 7);
-        Ok(())
+        test("inputs/day1-test.txt", &super::number_of_increases, 7)
     }
 
     #[test]
     fn part_1_real() -> Result<()> {
-        let input = crate::files::read_numbers("inputs/day1.txt")?;
-        let result = super::number_of_increases(&input);
-        assert_eq!(result, 1709);
-        Ok(())
+        test("inputs/day1.txt", &super::number_of_increases, 1709)
     }
 
     #[test]
     fn part_2_test() -> Result<()> {
-        let input = crate::files::read_numbers("inputs/day1-test.txt")?;
-        let result = super::num_increasing_windows(&input);
-        assert_eq!(result, 5);
-        Ok(())
+        test("inputs/day1-test.txt", &super::num_increasing_windows, 5)
     }
 
     #[test]
     fn part_2_real() -> Result<()> {
-        let input = crate::files::read_numbers("inputs/day1.txt")?;
-        let result = super::num_increasing_windows(&input);
-        assert_eq!(result, 1761);
+        test("inputs/day1.txt", &super::num_increasing_windows, 1761)
+    }
+
+    fn test(
+        test_file: &str,
+        function: &dyn Fn(&[i32]) -> usize,
+        expected_val: usize,
+    ) -> Result<()> {
+        let input = crate::files::read_numbers(test_file)?;
+        let result = function(&input);
+        assert_eq!(result, expected_val);
         Ok(())
     }
 }

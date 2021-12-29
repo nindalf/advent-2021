@@ -170,36 +170,33 @@ impl std::fmt::Display for Path {
 mod tests {
     use anyhow::Result;
 
+    use super::Graph;
+
     #[test]
     fn part_1_test() -> Result<()> {
-        let input = crate::files::read_lines("inputs/day12-test.txt")?;
-        let matrix = super::Graph::new(&input)?;
-        assert_eq!(matrix.part_one(), 19);
-        Ok(())
+        test("inputs/day12-test.txt", &Graph::part_one, 19)
     }
 
     #[test]
     fn part_1_real() -> Result<()> {
-        let input = crate::files::read_lines("inputs/day12.txt")?;
-        let matrix = super::Graph::new(&input)?;
-        assert_eq!(matrix.part_one(), 3463);
-        Ok(())
+        test("inputs/day12.txt", &Graph::part_one, 3463)
     }
 
     #[test]
     fn part_2_test() -> Result<()> {
-        let input = crate::files::read_lines("inputs/day12-test.txt")?;
-        let matrix = super::Graph::new(&input)?;
-        assert_eq!(matrix.part_two(), 103);
-        Ok(())
+        test("inputs/day12-test.txt", &Graph::part_two, 103)
     }
 
     #[test]
     #[ignore]
     fn part_2_real() -> Result<()> {
-        let input = crate::files::read_lines("inputs/day12.txt")?;
-        let matrix = super::Graph::new(&input)?;
-        assert_eq!(matrix.part_two(), 91533);
+        test("inputs/day12.txt", &Graph::part_two, 91533)
+    }
+
+    fn test(test_file: &str, function: &dyn Fn(&Graph) -> usize, expected: usize) -> Result<()> {
+        let input = crate::files::read_lines(test_file)?;
+        let graph = super::Graph::new(&input)?;
+        assert_eq!(function(&graph), expected);
         Ok(())
     }
 }

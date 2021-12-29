@@ -4,7 +4,8 @@ use crate::matrix::{Matrix, Point};
 
 impl Matrix {
     #[allow(dead_code)]
-    fn total_octopus_flashes(&mut self, generations: u32) -> u32 {
+    fn total_octopus_flashes(&mut self) -> u32 {
+        let generations = 100;
         let mut result = 0;
         let mut q = VecDeque::new();
 
@@ -81,37 +82,42 @@ impl Matrix {
 
 #[cfg(test)]
 mod tests {
-    use anyhow::{anyhow, Result};
+    use anyhow::Result;
+
+    use crate::matrix::Matrix;
 
     #[test]
     fn part_1_test() -> Result<()> {
-        let input = crate::files::read_string("inputs/day11-test.txt")?;
-        let mut matrix = super::Matrix::new(&input).ok_or(anyhow!("Could not construct matrix"))?;
-        assert_eq!(matrix.total_octopus_flashes(10), 204);
-        Ok(())
+        test(
+            "inputs/day11-test.txt",
+            &Matrix::total_octopus_flashes,
+            1656,
+        )
     }
 
     #[test]
     fn part_1_real() -> Result<()> {
-        let input = crate::files::read_string("inputs/day11.txt")?;
-        let mut matrix = super::Matrix::new(&input).ok_or(anyhow!("Could not construct matrix"))?;
-        assert_eq!(matrix.total_octopus_flashes(100), 1627);
-        Ok(())
+        test("inputs/day11.txt", &Matrix::total_octopus_flashes, 1627)
     }
 
     #[test]
     fn part_2_test() -> Result<()> {
-        let input = crate::files::read_string("inputs/day11-test.txt")?;
-        let mut matrix = super::Matrix::new(&input).ok_or(anyhow!("Could not construct matrix"))?;
-        assert_eq!(matrix.first_synchronized_flash(), 195);
-        Ok(())
+        test(
+            "inputs/day11-test.txt",
+            &Matrix::first_synchronized_flash,
+            195,
+        )
     }
 
     #[test]
     fn part_2_real() -> Result<()> {
-        let input = crate::files::read_string("inputs/day11.txt")?;
-        let mut matrix = super::Matrix::new(&input).ok_or(anyhow!("Could not construct matrix"))?;
-        assert_eq!(matrix.first_synchronized_flash(), 329);
+        test("inputs/day11.txt", &Matrix::first_synchronized_flash, 329)
+    }
+
+    fn test(test_file: &str, function: &dyn Fn(&mut Matrix) -> u32, expected: u32) -> Result<()> {
+        let input = crate::files::read_string(test_file)?;
+        let mut matrix = Matrix::new(&input)?;
+        assert_eq!(function(&mut matrix), expected);
         Ok(())
     }
 }

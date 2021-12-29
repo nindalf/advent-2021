@@ -70,61 +70,41 @@ impl PartialOrd for State {
 #[cfg(test)]
 mod tests {
     use crate::matrix::Point;
-    use anyhow::{anyhow, Result};
+    use anyhow::Result;
 
     #[test]
     fn part_1_test() -> Result<()> {
-        let input = crate::files::read_string("inputs/day15-test.txt")?;
-        let matrix = super::Matrix::new(&input).ok_or(anyhow!("Could not construct matrix"))?;
-        let start = Point { x: 0, y: 0 };
-        let end = Point {
-            x: matrix.max_x - 1,
-            y: matrix.max_y - 1,
-        };
-        assert_eq!(matrix.dijkstra_cost(&start, &end), 40);
-        Ok(())
+        test("inputs/day15-test.txt", false, 40)
     }
 
     #[test]
     fn part_1_real() -> Result<()> {
-        let input = crate::files::read_string("inputs/day15.txt")?;
-        let matrix = super::Matrix::new(&input).ok_or(anyhow!("Could not construct matrix"))?;
-        let start = Point { x: 0, y: 0 };
-        let end = Point {
-            x: matrix.max_x - 1,
-            y: matrix.max_y - 1,
-        };
-        assert_eq!(matrix.dijkstra_cost(&start, &end), 696);
-        Ok(())
+        test("inputs/day15.txt", false, 696)
     }
 
     #[test]
     fn part_2_test() -> Result<()> {
-        let input = crate::files::read_string("inputs/day15-test.txt")?;
-        let matrix = super::Matrix::new(&input)
-            .ok_or(anyhow!("Could not construct matrix"))?
-            .construct_extended_matrix();
-        let start = Point { x: 0, y: 0 };
-        let end = Point {
-            x: matrix.max_x - 1,
-            y: matrix.max_y - 1,
-        };
-        assert_eq!(matrix.dijkstra_cost(&start, &end), 315);
-        Ok(())
+        test("inputs/day15-test.txt", true, 315)
     }
 
     #[test]
     fn part_2_real() -> Result<()> {
-        let input = crate::files::read_string("inputs/day15.txt")?;
-        let matrix = super::Matrix::new(&input)
-            .ok_or(anyhow!("Could not construct matrix"))?
-            .construct_extended_matrix();
+        test("inputs/day15.txt", true, 2952)
+    }
+
+    fn test(test_file: &str, construct_extended: bool, expected: u32) -> Result<()> {
+        let input = crate::files::read_string(test_file)?;
+        let matrix = if construct_extended {
+            super::Matrix::new(&input)?.construct_extended_matrix()
+        } else {
+            super::Matrix::new(&input)?
+        };
         let start = Point { x: 0, y: 0 };
         let end = Point {
             x: matrix.max_x - 1,
             y: matrix.max_y - 1,
         };
-        assert_eq!(matrix.dijkstra_cost(&start, &end), 2952);
+        assert_eq!(matrix.dijkstra_cost(&start, &end), expected);
         Ok(())
     }
 }

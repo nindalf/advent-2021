@@ -1,90 +1,78 @@
-use anyhow::anyhow;
-
-#[allow(dead_code)]
-fn final_position_part_1(instructions: &[String]) -> anyhow::Result<Submarine> {
-    let mut sub = Submarine::new();
-    for instruction in instructions {
-        let mut splits = instruction.split_ascii_whitespace();
-        let direction = splits.next().ok_or(anyhow!("invalid direction"))?;
-        let distance = splits
-            .next()
-            .ok_or(anyhow!("invalid distance"))?
-            .parse::<i32>()?;
-        match direction {
-            "forward" => sub.forward(distance),
-            "up" => sub.up(distance),
-            "down" => sub.down(distance),
-            _ => return Err(anyhow!("invalid direction")),
-        }
-    }
-    Ok(sub)
-}
-
-#[allow(dead_code)]
-fn final_position_part_2(instructions: &[String]) -> anyhow::Result<SubmarineVersion2> {
-    let mut sub = SubmarineVersion2::new();
-    for instruction in instructions {
-        let mut splits = instruction.split_ascii_whitespace();
-        let direction = splits.next().ok_or(anyhow!("invalid direction"))?;
-        let distance = splits
-            .next()
-            .ok_or(anyhow!("invalid distance"))?
-            .parse::<i32>()?;
-        match direction {
-            "forward" => sub.forward(distance),
-            "up" => sub.up(distance),
-            "down" => sub.down(distance),
-            _ => return Err(anyhow!("invalid direction")),
-        }
-    }
-    Ok(sub)
-}
+use anyhow::{anyhow, Result};
 
 struct Submarine {
     x: i32,
     y: i32,
+    aim: i32,
+    instructions: Vec<Instruction>,
+}
+
+enum Instruction {
+    Forward(i32),
+    Up(i32),
+    Down(i32),
+}
+
+impl Instruction {
+    fn new(line: &str) -> Result<Instruction> {
+        let mut splits = line.split_ascii_whitespace();
+        let direction = splits.next().ok_or(anyhow!("No direction"))?;
+        let distance = splits
+            .next()
+            .ok_or(anyhow!("No distance"))?
+            .parse::<i32>()?;
+        match direction {
+            "forward" => Ok(Instruction::Forward(distance)),
+            "up" => Ok(Instruction::Up(distance)),
+            "down" => Ok(Instruction::Down(distance)),
+            _ => Err(anyhow!("Invalid direction")),
+        }
+    }
 }
 
 impl Submarine {
-    fn new() -> Submarine {
-        Submarine { x: 0, y: 0 }
+    #[allow(dead_code)]
+    fn new(input: &[String]) -> Result<Submarine> {
+        let instructions = input
+            .iter()
+            .map(|s| Instruction::new(s))
+            .collect::<Result<Vec<Instruction>>>()?;
+        Ok(Submarine {
+            x: 0,
+            y: 0,
+            aim: 0,
+            instructions,
+        })
     }
 
-    fn forward(&mut self, i: i32) {
-        self.x += i
+    #[allow(dead_code)]
+    fn execute_all_instructions_1(&mut self) {
+        self.instructions
+            .iter()
+            .for_each(|instruction| match instruction {
+                Instruction::Forward(distance) => self.x += distance,
+                Instruction::Up(distance) => self.y -= distance,
+                Instruction::Down(distance) => self.y += distance,
+            })
     }
 
-    fn up(&mut self, j: i32) {
-        self.y -= j
+    #[allow(dead_code)]
+    fn execute_all_instructions_2(&mut self) {
+        self.instructions
+            .iter()
+            .for_each(|instruction| match instruction {
+                Instruction::Forward(distance) => {
+                    self.y += self.aim * distance;
+                    self.x += distance;
+                }
+                Instruction::Up(distance) => self.aim -= distance,
+                Instruction::Down(distance) => self.aim += distance,
+            })
     }
 
-    fn down(&mut self, j: i32) {
-        self.y += j
-    }
-}
-
-struct SubmarineVersion2 {
-    x: i32,
-    y: i32,
-    aim: i32,
-}
-
-impl SubmarineVersion2 {
-    fn new() -> SubmarineVersion2 {
-        SubmarineVersion2 { x: 0, y: 0, aim: 0 }
-    }
-
-    fn forward(&mut self, i: i32) {
-        self.x += i;
-        self.y += self.aim * i;
-    }
-
-    fn up(&mut self, j: i32) {
-        self.aim -= j
-    }
-
-    fn down(&mut self, j: i32) {
-        self.aim += j
+    #[allow(dead_code)]
+    fn final_position(&self) -> i32 {
+        self.x * self.y
     }
 }
 
@@ -92,35 +80,49 @@ impl SubmarineVersion2 {
 mod tests {
     use anyhow::Result;
 
+    use crate::day02::Submarine;
+
     #[test]
     fn part_1_test() -> Result<()> {
-        let input = crate::files::read_lines("inputs/day2-test.txt")?;
-        let submarine = super::final_position_part_1(&input)?;
-        assert_eq!(submarine.x * submarine.y, 150);
-        Ok(())
+        test(
+            "inputs/day2-test.txt",
+            &super::Submarine::execute_all_instructions_1,
+            150,
+        )
     }
 
     #[test]
     fn part_1_real() -> Result<()> {
-        let input = crate::files::read_lines("inputs/day2.txt")?;
-        let submarine = super::final_position_part_1(&input)?;
-        assert_eq!(submarine.x * submarine.y, 2322630);
-        Ok(())
+        test(
+            "inputs/day2.txt",
+            &super::Submarine::execute_all_instructions_1,
+            2322630,
+        )
     }
 
     #[test]
     fn part_2_test() -> Result<()> {
-        let input = crate::files::read_lines("inputs/day2-test.txt")?;
-        let submarine = super::final_position_part_2(&input)?;
-        assert_eq!(submarine.x * submarine.y, 900);
-        Ok(())
+        test(
+            "inputs/day2-test.txt",
+            &super::Submarine::execute_all_instructions_2,
+            900,
+        )
     }
 
     #[test]
     fn part_2_real() -> Result<()> {
-        let input = crate::files::read_lines("inputs/day2.txt")?;
-        let submarine = super::final_position_part_2(&input)?;
-        assert_eq!(submarine.x * submarine.y, 2105273490);
+        test(
+            "inputs/day2.txt",
+            &super::Submarine::execute_all_instructions_2,
+            2105273490,
+        )
+    }
+
+    fn test(test_file: &str, function: &dyn Fn(&mut Submarine), expected_val: i32) -> Result<()> {
+        let input = crate::files::read_lines(test_file)?;
+        let mut submarine = Submarine::new(&input)?;
+        function(&mut submarine);
+        assert_eq!(submarine.final_position(), expected_val);
         Ok(())
     }
 }

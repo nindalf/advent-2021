@@ -39,30 +39,27 @@ mod tests {
 
     #[test]
     fn part_1_test() -> Result<()> {
-        let input = crate::files::read_numbers_one_line("inputs/day6-test.txt")?;
-        assert_eq!(super::num_lantern_fish(&input, 18)?, 26);
-        assert_eq!(super::num_lantern_fish(&input, 80)?, 5934);
-        Ok(())
+        test("inputs/day6-test.txt", 80, 5934)
     }
 
     #[test]
     fn part_1_real() -> Result<()> {
-        let input = crate::files::read_numbers_one_line("inputs/day6.txt")?;
-        assert_eq!(super::num_lantern_fish(&input, 80)?, 352151);
-        Ok(())
+        test("inputs/day6.txt", 80, 352151)
     }
 
     #[test]
     fn part_2_test() -> Result<()> {
-        let input = crate::files::read_numbers_one_line("inputs/day6-test.txt")?;
-        assert_eq!(super::num_lantern_fish(&input, 256)?, 26984457539);
-        Ok(())
+        test("inputs/day6-test.txt", 256, 26984457539)
     }
 
     #[test]
     fn part_2_real() -> Result<()> {
-        let input = crate::files::read_numbers_one_line("inputs/day6.txt")?;
-        assert_eq!(super::num_lantern_fish(&input, 256)?, 1601616884019);
+        test("inputs/day6.txt", 256, 1601616884019)
+    }
+
+    fn test(test_file: &str, days: u64, expected: u64) -> Result<()> {
+        let input = crate::files::read_numbers_one_line(test_file)?;
+        assert_eq!(super::num_lantern_fish(&input, days)?, expected);
         Ok(())
     }
 }
