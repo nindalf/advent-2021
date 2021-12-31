@@ -15,7 +15,9 @@ mod day14;
 mod day15;
 
 mod files;
+mod hexreader;
 mod matrix;
+mod packet;
 
 fn main() {
     println!("Hello, world!");
