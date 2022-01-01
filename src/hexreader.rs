@@ -177,7 +177,7 @@ impl HexReader {
 }
 
 #[cfg(test)]
-mod test {
+mod tests {
     use super::{BitReader, HexReader};
 
     #[test]
