@@ -1,5 +1,8 @@
 use anyhow::Error;
-use std::io::BufRead;
+use std::{
+    fs::File,
+    io::{BufRead, BufReader},
+};
 
 #[allow(dead_code)]
 pub fn read_numbers(file_name: &str) -> Result<Vec<i32>, Error> {
@@ -31,4 +34,10 @@ pub fn read_numbers_one_line(file_name: &str) -> Result<Vec<u32>, Error> {
         .split(',')
         .filter_map(|x| x.parse::<u32>().ok())
         .collect())
+}
+
+#[allow(dead_code)]
+pub fn buf_reader(file_name: &str) -> Result<BufReader<File>, Error> {
+    let file = std::fs::File::open(file_name)?;
+    Ok(BufReader::new(file))
 }
