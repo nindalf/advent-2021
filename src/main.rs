@@ -1,3 +1,5 @@
+extern crate lazy_static;
+
 mod day01;
 mod day02;
 mod day03;
@@ -16,6 +18,7 @@ mod day15;
 mod day16;
 mod day17;
 mod day18;
+mod day19;
 
 mod files;
 mod hexreader;
