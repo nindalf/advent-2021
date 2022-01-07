@@ -24,36 +24,50 @@ struct Image {
     max_x: i32,
     min_y: i32,
     max_y: i32,
+    light_background: bool,
 }
 
 struct Algorithm(Vec<char>);
 
 impl Image {
     fn enhance(&self, algorithm: &Algorithm) -> Self {
-        let mut new_image = Image {
-            light_pixels: HashSet::new(),
+        let mut new_light_pixels = HashSet::new();
+        for x in self.min_x - 1..self.max_x + 1 {
+            for y in self.min_y - 1..self.max_y + 1 {
+                let point = Point { x, y };
+                let index = self.enhanced_index(&point);
+                if algorithm.is_light_pixel(index) {
+                    new_light_pixels.insert(point);
+                }
+            }
+        }
+        Image {
+            light_pixels: new_light_pixels,
             min_x: self.min_x - 1,
             max_x: self.max_x + 1,
             min_y: self.min_y - 1,
             max_y: self.max_y + 1,
-        };
-        for x in new_image.min_x..new_image.max_x {
-            for y in new_image.min_y..new_image.max_y {
-                let point = Point { x, y };
-                let index = self.enhanced_index(&point);
-                if algorithm.is_light_pixel(index) {
-                    new_image.light_pixels.insert(point);
-                }
-            }
+            light_background: !self.light_background && algorithm.is_light_pixel(0),
         }
+    }
 
-        new_image
+    fn is_out_of_bounds(&self, point: &Point) -> bool {
+        point.x < self.min_x
+            || point.x >= self.max_x
+            || point.y < self.min_y
+            || point.y >= self.max_y
     }
 
     fn get(&self, point: &Point) -> char {
         match self.light_pixels.get(point) {
             Some(_) => '#',
-            None => '.',
+            None => {
+                if self.is_out_of_bounds(point) && self.light_background {
+                    '#'
+                } else {
+                    '.'
+                }
+            }
         }
     }
 
@@ -76,7 +90,7 @@ impl Image {
 
 impl From<&str> for Image {
     fn from(input: &str) -> Self {
-        let mut points = HashSet::new();
+        let mut light_pixels = HashSet::new();
         for (y, line) in input.lines().skip(2).enumerate() {
             for (x, val) in line.chars().enumerate() {
                 let point = Point {
@@ -84,7 +98,7 @@ impl From<&str> for Image {
                     y: y as i32,
                 };
                 if val == '#' {
-                    points.insert(point);
+                    light_pixels.insert(point);
                 }
             }
         }
@@ -92,18 +106,25 @@ impl From<&str> for Image {
         let max_x = input.lines().nth(2).unwrap().chars().count() as i32;
         let min_y = 0;
         let max_y = input.lines().skip(2).count() as i32;
+        let light_background = false;
         Image {
-            light_pixels: points,
+            light_pixels,
             min_x,
             max_x,
             min_y,
             max_y,
+            light_background,
         }
     }
 }
 
 impl std::fmt::Display for Image {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let x = format!(
+            "{} {} {} {}\n",
+            self.min_x, self.max_x, self.min_y, self.max_y
+        );
+        f.write_str(&x)?;
         for y in self.min_y..self.max_y {
             for x in self.min_x..self.max_x {
                 f.write_char(self.get(&Point { x, y }))?;
@@ -139,7 +160,21 @@ mod tests {
     #[test]
     fn part_1_real() -> anyhow::Result<()> {
         let input = crate::files::read_string("inputs/day20.txt")?;
-        assert_eq!(super::csi_enhance(&input, 2), 35);
+        assert_eq!(super::csi_enhance(&input, 2), 5461);
+        Ok(())
+    }
+
+    #[test]
+    fn part_2_test() -> anyhow::Result<()> {
+        let input = crate::files::read_string("inputs/day20-test.txt")?;
+        assert_eq!(super::csi_enhance(&input, 50), 3351);
+        Ok(())
+    }
+
+    #[test]
+    fn part_2_real() -> anyhow::Result<()> {
+        let input = crate::files::read_string("inputs/day20.txt")?;
+        assert_eq!(super::csi_enhance(&input, 50), 18226);
         Ok(())
     }
 }
